@@ -1,0 +1,81 @@
+{
+  "name": "ConvertX",
+  "id": "convertx",
+  "available": true,
+  "short_desc": "Self-hosted online file converter supporting 1000+ formats",
+  "author": "C4illin",
+  "port": 3000,
+  "categories": ["utilities", "data"],
+  "description": "A self-hosted online file converter that supports over a thousand different formats. Convert files between different formats, process multiple files at once, with password protection and multiple account support.",
+  "tipi_version": 1,
+  "version": "0.14.1",
+  "source": "https://github.com/C4illin/ConvertX",
+  "website": "https://github.com/C4illin/ConvertX",
+  "exposable": true,
+  "supported_architectures": ["arm64", "amd64"],
+  "created_at": 1736433600000,
+  "updated_at": 1736433600000,
+  "dynamic": true,
+  "form_fields": [
+    {
+      "type": "boolean",
+      "label": "Account Registration",
+      "hint": "Allow users to register accounts. Keep false if you only want one account.",
+      "required": false,
+      "env_variable": "ACCOUNT_REGISTRATION"
+    },
+    {
+      "type": "password",
+      "label": "JWT Secret",
+      "hint": "A long and secret string used to sign the JSON Web Token. Leave empty to use a random UUID.",
+      "min": 32,
+      "max": 128,
+      "required": false,
+      "env_variable": "JWT_SECRET"
+    },
+    {
+      "type": "boolean",
+      "label": "Allow Unauthenticated Access",
+      "hint": "Allows anyone to use the service without logging in. Only set this to true locally.",
+      "required": false,
+      "env_variable": "ALLOW_UNAUTHENTICATED"
+    },
+    {
+      "type": "number",
+      "label": "Auto Delete Hours",
+      "hint": "Checks every N hours for files older than N hours and deletes them. Set to 0 to disable.",
+      "min": 0,
+      "max": 168,
+      "required": false,
+      "env_variable": "AUTO_DELETE_EVERY_N_HOURS"
+    },
+    {
+      "type": "text",
+      "label": "FFMPEG Arguments",
+      "hint": "Additional arguments to pass to ffmpeg (e.g., -preset veryfast)",
+      "required": false,
+      "env_variable": "FFMPEG_ARGS"
+    },
+    {
+      "type": "text",
+      "label": "Web Root",
+      "hint": "The root path setting. Example: /convert will serve the website on example.com/convert/",
+      "required": false,
+      "env_variable": "WEBROOT"
+    },
+    {
+      "type": "boolean",
+      "label": "Hide History",
+      "hint": "Hide the history page",
+      "required": false,
+      "env_variable": "HIDE_HISTORY"
+    },
+    {
+      "type": "text",
+      "label": "Language",
+      "hint": "Language to format date strings in (BCP 47 language tag, e.g., en, es, fr)",
+      "required": false,
+      "env_variable": "LANGUAGE"
+    }
+  ]
+}

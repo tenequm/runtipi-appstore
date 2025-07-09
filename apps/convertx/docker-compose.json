@@ -1,0 +1,34 @@
+{
+  "services": [
+    {
+      "name": "convertx",
+      "image": "ghcr.io/c4illin/convertx:0.14.1",
+      "isMain": true,
+      "internalPort": 3000,
+      "environment": {
+        "ACCOUNT_REGISTRATION": "${ACCOUNT_REGISTRATION:-false}",
+        "JWT_SECRET": "${JWT_SECRET}",
+        "HTTP_ALLOWED": "false",
+        "ALLOW_UNAUTHENTICATED": "${ALLOW_UNAUTHENTICATED:-false}",
+        "AUTO_DELETE_EVERY_N_HOURS": "${AUTO_DELETE_EVERY_N_HOURS:-24}",
+        "FFMPEG_ARGS": "${FFMPEG_ARGS}",
+        "WEBROOT": "${WEBROOT}",
+        "HIDE_HISTORY": "${HIDE_HISTORY:-false}",
+        "TZ": "${TZ}",
+        "LANGUAGE": "${LANGUAGE:-en}"
+      },
+      "volumes": [
+        {
+          "hostPath": "${APP_DATA_DIR}/data",
+          "containerPath": "/app/data"
+        }
+      ],
+      "healthCheck": {
+        "test": "curl -f http://localhost:3000 || exit 1",
+        "interval": "30s",
+        "timeout": "10s",
+        "retries": 3
+      }
+    }
+  ]
+}
