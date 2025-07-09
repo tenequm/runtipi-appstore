@@ -2,7 +2,7 @@
   "services": [
     {
       "name": "convertx",
-      "image": "ghcr.io/c4illin/convertx:0.14.1",
+      "image": "ghcr.io/c4illin/convertx:v0.14.1",
       "isMain": true,
       "internalPort": 3000,
       "environment": {
