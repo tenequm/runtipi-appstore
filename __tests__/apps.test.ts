@@ -75,3 +75,22 @@ describe("each app should have a valid docker-compose.json", async () => {
     })
   }
 });
+
+describe("Docker image format validation", async () => {
+  const apps = await getApps()
+
+  for (const app of apps) {
+    test(`app ${app} should have correct Docker image format`, async () => {
+      const fileContent = await getFile(app, 'docker-compose.json')
+      const dockerCompose = JSON.parse(fileContent || '{}')
+      
+      if (dockerCompose.services) {
+        for (const service of dockerCompose.services) {
+          // Basic format check: owner/repo:tag or registry/owner/repo:tag
+          const imageRegex = /^([a-z0-9.-]+(\.[a-z]{2,})?\/)?[a-z0-9._-]+\/[a-z0-9._-]+:[a-z0-9.v_-]+$/i
+          expect(service.image).toMatch(imageRegex)
+        }
+      }
+    })
+  }
+});
