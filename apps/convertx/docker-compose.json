@@ -1,4 +1,5 @@
 {
+  "$schema": "../dynamic-compose-schema.json",
   "services": [
     {
       "name": "convertx",
@@ -6,9 +7,11 @@
       "isMain": true,
       "internalPort": 3000,
       "environment": {
+        "PUID": "1000",
+        "PGID": "1000",
         "ACCOUNT_REGISTRATION": "${ACCOUNT_REGISTRATION:-false}",
         "JWT_SECRET": "${JWT_SECRET}",
-        "HTTP_ALLOWED": "false",
+        "HTTP_ALLOWED": "true",
         "ALLOW_UNAUTHENTICATED": "${ALLOW_UNAUTHENTICATED:-false}",
         "AUTO_DELETE_EVERY_N_HOURS": "${AUTO_DELETE_EVERY_N_HOURS:-24}",
         "FFMPEG_ARGS": "${FFMPEG_ARGS}",
