@@ -1,4 +1,4 @@
-name: Test
+name: Tests
 
 on:
   push:
@@ -21,3 +21,35 @@ jobs:
 
       - name: Run tests
         run: bun test
+      
+      - name: Validate app configurations
+        run: |
+          echo "Checking all app configurations..."
+          for app in apps/*/; do
+            if [ -d "$app" ]; then
+              app_name=$(basename "$app")
+              echo "Validating $app_name..."
+              
+              # Check required files exist
+              for file in "config.json" "docker-compose.json" "metadata/description.md" "metadata/logo.jpg"; do
+                if [ ! -f "$app$file" ]; then
+                  echo "❌ Missing required file: $app$file"
+                  exit 1
+                fi
+              done
+              
+              # Validate JSON files
+              if ! jq empty "$app/config.json" 2>/dev/null; then
+                echo "❌ Invalid JSON in $app/config.json"
+                exit 1
+              fi
+              
+              if ! jq empty "$app/docker-compose.json" 2>/dev/null; then
+                echo "❌ Invalid JSON in $app/docker-compose.json"
+                exit 1
+              fi
+              
+              echo "✅ $app_name validated successfully"
+            fi
+          done
+          echo "All apps validated successfully!"

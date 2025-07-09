@@ -1,15 +1,23 @@
 {
-  "name": "example-appstore",
+  "name": "runtipi-appstore",
   "version": "1.0.0",
-  "description": "",
+  "description": "Custom Runtipi app store with curated self-hosted applications",
   "main": "index.js",
   "type": "module",
   "scripts": {
     "test": "bun test"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": ["runtipi", "runtipi-appstore", "self-hosted", "docker", "homelab", "awesome-selfhosted"],
+  "author": "tenequm",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tenequm/runtipi-appstore.git"
+  },
+  "bugs": {
+    "url": "https://github.com/tenequm/runtipi-appstore/issues"
+  },
+  "homepage": "https://github.com/tenequm/runtipi-appstore#readme",
   "devDependencies": {
     "@types/bun": "latest",
     "@types/node": "^22.14.1"

@@ -1,0 +1,34 @@
+{
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
+  "files.eol": "\n",
+  "editor.formatOnSave": true,
+  "editor.tabSize": 2,
+  
+  "[json]": {
+    "editor.defaultFormatter": "vscode.json-language-features",
+    "editor.formatOnSave": true,
+    "editor.tabSize": 2
+  },
+  
+  "[typescript]": {
+    "editor.formatOnSave": true,
+    "editor.tabSize": 2
+  },
+  
+  "[markdown]": {
+    "files.trimTrailingWhitespace": false
+  },
+  
+  "[yaml]": {
+    "editor.tabSize": 2
+  },
+  
+  "json.schemaDownload.enable": true,
+  "json.validate.enable": true,
+  
+  "files.associations": {
+    "docker-compose.json": "json",
+    "config.json": "json"
+  }
+}
