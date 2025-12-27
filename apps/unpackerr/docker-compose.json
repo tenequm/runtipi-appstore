@@ -4,17 +4,16 @@
   "services": [
     {
       "name": "unpackerr",
-      "image": "ghcr.io/unpackerr/unpackerr:0.14.5",
+      "image": "ghcr.io/hotio/unpackerr:release-0.14.5",
       "isMain": true,
       "internalPort": 5656,
-      "user": "1000:1000",
       "environment": [
+        { "key": "PUID", "value": "1000" },
+        { "key": "PGID", "value": "1000" },
+        { "key": "UMASK", "value": "002" },
         { "key": "TZ", "value": "${TZ}" },
         { "key": "UN_WEBSERVER_METRICS", "value": "true" },
         { "key": "UN_WEBSERVER_LISTEN_ADDR", "value": "0.0.0.0:5656" },
-        { "key": "UN_LOG_FILE", "value": "/config/unpackerr.log" },
-        { "key": "UN_LOG_FILES", "value": "5" },
-        { "key": "UN_LOG_FILE_MB", "value": "10" },
         { "key": "UN_INTERVAL", "value": "2m" },
         { "key": "UN_START_DELAY", "value": "1m" },
         { "key": "UN_SONARR_0_URL", "value": "${SONARR_URL}" },

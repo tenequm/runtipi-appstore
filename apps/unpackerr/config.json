@@ -8,7 +8,7 @@
   "port": 5656,
   "categories": ["media", "automation"],
   "description": "Unpackerr monitors your Sonarr, Radarr, Lidarr, and Readarr download queues and automatically extracts RAR and ZIP archives when downloads complete. It integrates seamlessly with the *arr apps to ensure your media files are ready for import.",
-  "tipi_version": 3,
+  "tipi_version": 4,
   "version": "0.14.5",
   "source": "https://github.com/Unpackerr/unpackerr",
   "website": "https://unpackerr.zip",
