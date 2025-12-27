@@ -1,25 +1,26 @@
 {
   "$schema": "../dynamic-compose-schema.json",
+  "schemaVersion": 2,
   "services": [
     {
       "name": "convertx",
       "image": "ghcr.io/c4illin/convertx:v0.14.1",
       "isMain": true,
       "internalPort": 3000,
-      "environment": {
-        "PUID": "1000",
-        "PGID": "1000",
-        "ACCOUNT_REGISTRATION": "${ACCOUNT_REGISTRATION:-false}",
-        "JWT_SECRET": "${JWT_SECRET}",
-        "HTTP_ALLOWED": "true",
-        "ALLOW_UNAUTHENTICATED": "${ALLOW_UNAUTHENTICATED:-false}",
-        "AUTO_DELETE_EVERY_N_HOURS": "${AUTO_DELETE_EVERY_N_HOURS:-24}",
-        "FFMPEG_ARGS": "${FFMPEG_ARGS}",
-        "WEBROOT": "${WEBROOT}",
-        "HIDE_HISTORY": "${HIDE_HISTORY:-false}",
-        "TZ": "${TZ}",
-        "LANGUAGE": "${LANGUAGE:-en}"
-      },
+      "environment": [
+        { "key": "PUID", "value": "1000" },
+        { "key": "PGID", "value": "1000" },
+        { "key": "ACCOUNT_REGISTRATION", "value": "${ACCOUNT_REGISTRATION:-false}" },
+        { "key": "JWT_SECRET", "value": "${JWT_SECRET}" },
+        { "key": "HTTP_ALLOWED", "value": "true" },
+        { "key": "ALLOW_UNAUTHENTICATED", "value": "${ALLOW_UNAUTHENTICATED:-false}" },
+        { "key": "AUTO_DELETE_EVERY_N_HOURS", "value": "${AUTO_DELETE_EVERY_N_HOURS:-24}" },
+        { "key": "FFMPEG_ARGS", "value": "${FFMPEG_ARGS}" },
+        { "key": "WEBROOT", "value": "${WEBROOT}" },
+        { "key": "HIDE_HISTORY", "value": "${HIDE_HISTORY:-false}" },
+        { "key": "TZ", "value": "${TZ}" },
+        { "key": "LANGUAGE", "value": "${LANGUAGE:-en}" }
+      ],
       "volumes": [
         {
           "hostPath": "${APP_DATA_DIR}/data",

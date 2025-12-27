@@ -8,14 +8,14 @@
   "port": 3000,
   "categories": ["utilities", "data"],
   "description": "A self-hosted online file converter that supports over a thousand different formats. Convert files between different formats, process multiple files at once, with password protection and multiple account support.",
-  "tipi_version": 1,
+  "tipi_version": 2,
   "version": "v0.14.1",
   "source": "https://github.com/C4illin/ConvertX",
   "website": "https://github.com/C4illin/ConvertX",
   "exposable": true,
   "supported_architectures": ["arm64", "amd64"],
   "created_at": 1736433600000,
-  "updated_at": 1736433600000,
+  "updated_at": 1735344000000,
   "dynamic_config": true,
   "form_fields": [
     {
