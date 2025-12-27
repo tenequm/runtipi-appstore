@@ -1,0 +1,80 @@
+{
+  "$schema": "../app-info-schema.json",
+  "name": "Unpackerr",
+  "id": "unpackerr",
+  "available": true,
+  "short_desc": "Extracts downloads for Radarr, Sonarr, Lidarr, Readarr and cleans up after import",
+  "author": "Unpackerr",
+  "port": 5656,
+  "categories": ["media", "automation"],
+  "description": "Unpackerr monitors your Sonarr, Radarr, Lidarr, and Readarr download queues and automatically extracts RAR and ZIP archives when downloads complete. It integrates seamlessly with the *arr apps to ensure your media files are ready for import.",
+  "tipi_version": 1,
+  "version": "0.14.5",
+  "source": "https://github.com/Unpackerr/unpackerr",
+  "website": "https://unpackerr.zip",
+  "exposable": false,
+  "supported_architectures": ["arm64", "amd64"],
+  "created_at": 1735325400000,
+  "updated_at": 1735325400000,
+  "dynamic_config": true,
+  "form_fields": [
+    {
+      "type": "text",
+      "label": "Sonarr URL",
+      "hint": "Internal URL for Sonarr (e.g., http://sonarr:8989). Leave empty if not using Sonarr.",
+      "required": false,
+      "env_variable": "SONARR_URL",
+      "default": "http://sonarr:8989"
+    },
+    {
+      "type": "text",
+      "label": "Sonarr API Key",
+      "hint": "API key from Sonarr (Settings > General > Security). Leave empty if not using Sonarr.",
+      "required": false,
+      "env_variable": "SONARR_API_KEY"
+    },
+    {
+      "type": "text",
+      "label": "Radarr URL",
+      "hint": "Internal URL for Radarr (e.g., http://radarr:7878). Leave empty if not using Radarr.",
+      "required": false,
+      "env_variable": "RADARR_URL",
+      "default": "http://radarr:7878"
+    },
+    {
+      "type": "text",
+      "label": "Radarr API Key",
+      "hint": "API key from Radarr (Settings > General > Security). Leave empty if not using Radarr.",
+      "required": false,
+      "env_variable": "RADARR_API_KEY"
+    },
+    {
+      "type": "text",
+      "label": "Lidarr URL",
+      "hint": "Internal URL for Lidarr (e.g., http://lidarr:8686). Leave empty if not using Lidarr.",
+      "required": false,
+      "env_variable": "LIDARR_URL"
+    },
+    {
+      "type": "text",
+      "label": "Lidarr API Key",
+      "hint": "API key from Lidarr. Leave empty if not using Lidarr.",
+      "required": false,
+      "env_variable": "LIDARR_API_KEY"
+    },
+    {
+      "type": "text",
+      "label": "Readarr URL",
+      "hint": "Internal URL for Readarr (e.g., http://readarr:8787). Leave empty if not using Readarr.",
+      "required": false,
+      "env_variable": "READARR_URL"
+    },
+    {
+      "type": "text",
+      "label": "Readarr API Key",
+      "hint": "API key from Readarr. Leave empty if not using Readarr.",
+      "required": false,
+      "env_variable": "READARR_API_KEY"
+    }
+  ]
+}
