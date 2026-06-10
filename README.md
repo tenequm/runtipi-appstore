@@ -23,9 +23,10 @@ A custom Runtipi app store with curated self-hosted applications from [awesome-s
 
 | App | Description | Categories |
 |-----|-------------|------------|
+| [ConvertX](apps/convertx) | Self-hosted online file converter supporting 1000+ formats | `utilities` `data` |
+| [Transmission](apps/transmission) | BitTorrent client routed through a self-hosted WireGuard VPN gateway with kill-switch and port forwarding | `media` `utilities` |
+| [Unpackerr](apps/unpackerr) | Extracts downloads for Radarr, Sonarr, Lidarr, Readarr and cleans up after import | `media` `automation` |
 | [Whoami](apps/whoami) | Tiny Go server that prints OS information and HTTP request to output | `utilities` |
-
-*More apps coming soon! Check back regularly or watch this repository for updates.*
 
 ## 🤝 Contributing
 
@@ -37,7 +38,7 @@ Contributions are welcome! If you'd like to add a new app or improve existing on
 2. Create a new folder in `apps/` with your app name
 3. Add required files:
    - `config.json` - App configuration
-   - `docker-compose.json` - Docker setup
+   - `docker-compose.yml` - Docker setup (dynamic compose, `x-runtipi` schema_version 2)
    - `metadata/description.md` - App description
    - `metadata/logo.jpg` - App logo (square, 1:1 ratio)
 4. Run tests: `bun test`
@@ -76,7 +77,9 @@ bun test
 This validates:
 - All required files exist
 - `config.json` follows the correct schema
-- `docker-compose.json` is valid
+- `docker-compose.yml` is valid (modern `x-runtipi` schema_version 2)
+- Exactly one `is_main` service with an `internal_port`
+- Docker images are pinned (no `:latest`)
 - Metadata files are present
 
 ## 📋 App Requirements
@@ -84,7 +87,7 @@ This validates:
 Each app must include:
 
 1. **config.json** - App metadata and configuration
-2. **docker-compose.json** - Docker services definition (using dynamic compose format)
+2. **docker-compose.yml** - Docker services definition (dynamic compose format, `x-runtipi` schema_version 2)
 3. **metadata/description.md** - Detailed app description
 4. **metadata/logo.jpg** - App logo (square image, 1:1 aspect ratio)
 

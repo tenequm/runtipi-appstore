@@ -1,0 +1,37 @@
+services:
+  gluetun:
+    image: qmcgaw/gluetun:v3.40
+    environment:
+      - VPN_SERVICE_PROVIDER=custom
+      - VPN_TYPE=wireguard
+      - WIREGUARD_PRIVATE_KEY=${TRANSMISSION_WG_PRIVATE_KEY}
+      - WIREGUARD_PUBLIC_KEY=${TRANSMISSION_WG_SERVER_PUBKEY}
+      - WIREGUARD_ENDPOINT_IP=${TRANSMISSION_WG_ENDPOINT_IP}
+      - WIREGUARD_ENDPOINT_PORT=${TRANSMISSION_WG_ENDPOINT_PORT}
+      - WIREGUARD_ADDRESSES=${TRANSMISSION_WG_ADDRESSES}
+      - FIREWALL_VPN_INPUT_PORTS=${TRANSMISSION_PEER_PORT}
+      - FIREWALL_INPUT_PORTS=9091
+      - FIREWALL_OUTBOUND_SUBNETS=${TRANSMISSION_LAN_SUBNETS}
+      - TZ=${TZ}
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    x-runtipi:
+      internal_port: 9091
+      is_main: true
+  transmission:
+    image: lscr.io/linuxserver/transmission:4.1.2-r0-ls348
+    volumes:
+      - ${APP_DATA_DIR}/data/config:/config
+      - ${ROOT_FOLDER_HOST}/media/torrents:/media/torrents
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=${TZ}
+    depends_on:
+      gluetun:
+        condition: service_healthy
+    network_mode: service:gluetun
+x-runtipi:
+  schema_version: 2

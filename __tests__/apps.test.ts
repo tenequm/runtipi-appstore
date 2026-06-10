@@ -1,156 +1,95 @@
 import { expect, test, describe } from "bun:test";
-import { parseComposeJson } from '@runtipi/common/schemas'
-import fs from 'node:fs'
-import path from 'node:path'
+import { appInfoSchema, dynamicComposeSchemaYaml } from "@runtipi/common/schemas";
+import { type } from "arktype";
+import { parse as parseYaml } from "yaml";
+import fs from "node:fs";
+import path from "node:path";
 
-interface AppConfig {
-  id: string;
-  name: string;
-  description: string;
-  version: string;
-  tipi_version: number;
-  short_desc: string;
-  author: string;
-  source: string;
-  available: boolean;
-  port?: number;
-  categories: string[];
-  supported_architectures: string[];
-  dynamic_config: boolean;
-  created_at: number;
-  updated_at: number;
-}
-
-const getApps = async () => {
-  const appsDir = await fs.promises.readdir(path.join(process.cwd(), 'apps'))
-
-  const appDirs = appsDir.filter((app) => {
-    const stat = fs.statSync(path.join(process.cwd(), 'apps', app))
-    return stat.isDirectory()
-  })
-
-  return appDirs
+const getApps = (): string[] => {
+  const appsDir = path.join(process.cwd(), "apps");
+  return fs
+    .readdirSync(appsDir)
+    .filter((app) => fs.statSync(path.join(appsDir, app)).isDirectory());
 };
 
-const getFile = async (app: string, file: string) => {
-  const filePath = path.join(process.cwd(), 'apps', app, file)
+const readApp = (app: string, file: string): string | null => {
   try {
-    const file = await fs.promises.readFile(filePath, 'utf-8')
-    return file
-  } catch (err) {
-    return null
+    return fs.readFileSync(path.join(process.cwd(), "apps", app, file), "utf-8");
+  } catch {
+    return null;
   }
-}
-
-const getAppConfigs = (): AppConfig[] => {
-  const apps: AppConfig[] = [];
-  const appsDir = fs.readdirSync('./apps');
-
-  for (const app of appsDir) {
-    const configPath = `./apps/${app}/config.json`;
-
-    if (fs.existsSync(configPath)) {
-      const configFile = fs.readFileSync(configPath).toString();
-
-      try {
-        const config: AppConfig = JSON.parse(configFile);
-        if (config.available) {
-          apps.push(config);
-        }
-      } catch (_) {
-        console.error("Error parsing config file", app);
-      }
-    }
-  }
-
-  return apps;
 };
 
-describe("each app should have the required files", async () => {
-  const apps = await getApps()
+const apps = getApps();
 
+describe("each app has the required files", () => {
   for (const app of apps) {
-    const files = ['config.json', 'docker-compose.json', 'metadata/logo.jpg', 'metadata/description.md']
-
-    for (const file of files) {
-      test(`app ${app} should have ${file}`, async () => {
-        const fileContent = await getFile(app, file)
-        expect(fileContent).not.toBeNull()
-      })
+    for (const file of ["config.json", "docker-compose.yml", "metadata/logo.jpg", "metadata/description.md"]) {
+      test(`${app} should have ${file}`, () => {
+        expect(readApp(app, file)).not.toBeNull();
+      });
     }
-  }
-})
 
-describe("each app should have a valid config.json", async () => {
-  const apps = getAppConfigs()
-
-  for (const app of apps) {
-    test(`app ${app.id} should have required fields`, () => {
-      expect(app.id).toBeDefined();
-      expect(app.name).toBeDefined();
-      expect(app.description).toBeDefined();
-      expect(app.short_desc).toBeDefined();
-      expect(app.author).toBeDefined();
-      expect(app.source).toBeDefined();
-      expect(app.version).toBeDefined();
-      expect(app.tipi_version).toBeDefined();
-      expect(app.tipi_version).toBeGreaterThan(0);
-      expect(app.categories).toBeInstanceOf(Array);
-      expect(app.supported_architectures).toBeInstanceOf(Array);
-    })
-  }
-})
-
-describe("each app should have a valid docker-compose.json", async () => {
-  const apps = getAppConfigs()
-
-  for (const app of apps) {
-    test(`app ${app.id} should have a valid docker-compose.json`, () => {
-      const dockerComposeFile = fs.readFileSync(`./apps/${app.id}/docker-compose.json`).toString();
-      const composeJson = JSON.parse(dockerComposeFile);
-
-      try {
-        const res = parseComposeJson(composeJson);
-        expect(res).toBeDefined();
-      } catch (err) {
-        console.error(`Error parsing docker-compose.json for app ${app.id}:`, err);
-        expect(err).toBeUndefined();
-      }
-    })
+    test(`${app} should not keep a legacy docker-compose.json`, () => {
+      expect(readApp(app, "docker-compose.json")).toBeNull();
+    });
   }
 });
 
-describe("Docker image format validation", async () => {
-  const apps = await getApps()
-
+describe("each app has a valid config.json", () => {
   for (const app of apps) {
-    test(`app ${app} should have correct Docker image format`, async () => {
-      const fileContent = await getFile(app, 'docker-compose.json')
-      const dockerCompose = JSON.parse(fileContent || '{}')
-
-      if (dockerCompose.services) {
-        for (const service of dockerCompose.services) {
-          // Basic format check: owner/repo:tag or registry/owner/repo:tag
-          const imageRegex = /^([a-z0-9.-]+(\.[a-z]{2,})?\/)?[a-z0-9._-]+\/[a-z0-9._-]+:[a-z0-9.v_-]+$/i
-          expect(service.image).toMatch(imageRegex)
-        }
-      }
-    })
+    test(`${app} config.json is valid`, () => {
+      const parsed = appInfoSchema.omit("urn")(JSON.parse(readApp(app, "config.json") || "{}"));
+      if (parsed instanceof type.errors) console.error(`config.json (${app}):`, parsed.summary);
+      expect(parsed instanceof type.errors).toBe(false);
+    });
   }
 });
 
-describe("All apps should have valid timestamps", () => {
-  const apps = getAppConfigs();
+describe("each app has a valid docker-compose.yml", () => {
+  for (const app of apps) {
+    test(`${app} docker-compose.yml is valid`, () => {
+      const doc = parseYaml(readApp(app, "docker-compose.yml") || "") as Record<string, any>;
+
+      // Modern format requires top-level x-runtipi.schema_version === 2
+      expect(doc?.["x-runtipi"]?.schema_version).toBe(2);
+
+      // Validate the services structure with the official YAML schema. The top-level
+      // x-runtipi key is stripped first: the exported schema models it as { overrides }
+      // and would otherwise reject the (valid, docs-sanctioned) schema_version-only form.
+      const { ["x-runtipi"]: _topLevel, ...services } = doc;
+      const parsed = dynamicComposeSchemaYaml(services);
+      if (parsed instanceof type.errors) console.error(`docker-compose.yml (${app}):`, parsed.summary);
+      expect(parsed instanceof type.errors).toBe(false);
+
+      // Exactly one main service, and it declares an internal_port for Traefik routing.
+      const mains = Object.values((doc.services ?? {}) as Record<string, any>).filter(
+        (s) => s?.["x-runtipi"]?.is_main,
+      );
+      expect(mains.length).toBe(1);
+      expect(mains[0]["x-runtipi"].internal_port).toBeDefined();
+    });
+  }
+});
+
+describe("docker images are valid and pinned", () => {
+  const imageRegex = /^([a-z0-9.-]+(\.[a-z]{2,})?\/)?[a-z0-9._-]+(\/[a-z0-9._-]+)*:[a-zA-Z0-9.v_-]+$/;
 
   for (const app of apps) {
-    test(`${app.id} should have valid created_at`, () => {
-      expect(app.created_at).toBeDefined();
-      expect(app.created_at).toBeGreaterThan(0);
+    test(`${app} images are pinned (no :latest)`, () => {
+      const doc = parseYaml(readApp(app, "docker-compose.yml") || "") as Record<string, any>;
+      for (const service of Object.values((doc.services ?? {}) as Record<string, any>)) {
+        expect(service.image).toMatch(imageRegex);
+        expect(service.image).not.toMatch(/:latest$/);
+      }
     });
+  }
+});
 
-    test(`${app.id} should have valid updated_at`, () => {
-      expect(app.updated_at).toBeDefined();
-      expect(app.updated_at).toBeGreaterThan(0);
-    });
+describe("config.json has valid timestamps", () => {
+  for (const app of apps) {
+    const cfg = JSON.parse(readApp(app, "config.json") || "{}");
+    test(`${app} created_at`, () => expect(cfg.created_at).toBeGreaterThan(0));
+    test(`${app} updated_at`, () => expect(cfg.updated_at).toBeGreaterThan(0));
   }
 });

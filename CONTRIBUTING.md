@@ -64,29 +64,22 @@ cd apps/APP_NAME
 }
 ```
 
-#### 2. `docker-compose.json`
-```json
-{
-  "services": [
-    {
-      "name": "app-name",
-      "image": "owner/image:version",
-      "isMain": true,
-      "internalPort": 8080,
-      "environment": {
-        "PUID": "1000",
-        "PGID": "1000",
-        "TZ": "${TZ}"
-      },
-      "volumes": [
-        {
-          "hostPath": "${APP_DATA_DIR}/config",
-          "containerPath": "/config"
-        }
-      ]
-    }
-  ]
-}
+#### 2. `docker-compose.yml`
+```yaml
+services:
+  app-name:
+    image: owner/image:version
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=${TZ}
+    volumes:
+      - ${APP_DATA_DIR}/data/config:/config
+    x-runtipi:
+      is_main: true
+      internal_port: 8080
+x-runtipi:
+  schema_version: 2
 ```
 
 #### 3. `metadata/description.md`
@@ -110,9 +103,10 @@ Write a comprehensive description including:
 bun test
 
 # The tests will verify:
-# - All required files exist
-# - JSON files are valid
-# - Schemas are correct
+# - All required files exist (config.json, docker-compose.yml, metadata)
+# - config.json and docker-compose.yml schemas are valid
+# - Exactly one is_main service with an internal_port
+# - Docker images are pinned (no :latest)
 ```
 
 ### Step 5: Submit Pull Request
