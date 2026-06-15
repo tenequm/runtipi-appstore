@@ -1,6 +1,6 @@
 # Transmission (VPN gateway)
 
-Transmission BitTorrent client whose traffic is forced through a **self-hosted WireGuard VPN gateway** instead of a commercial VPN. A `gluetun` container (custom WireGuard mode) holds the network namespace and Transmission shares it, so:
+Transmission BitTorrent client whose traffic is forced through a **WireGuard VPN gateway** instead of a commercial VPN. A `gluetun` container (custom WireGuard mode) holds the network namespace and Transmission shares it, so:
 
 - **Kill-switch**: if the tunnel drops, gluetun's firewall blocks all egress - nothing leaks to your real IP.
 - **Real open port**: inbound peer connections arrive on a port forwarded by the gateway and DNAT'd back over the tunnel, so Transmission is connectable (fast downloads + healthy seeding ratio).
@@ -15,7 +15,7 @@ peers <-> gateway:PEER_PORT  --(WireGuard)-->  gluetun (kill-switch)  <->  trans
 
 ## Requirements
 
-You need a VPS / edge server running a WireGuard endpoint that:
+You need a WireGuard gateway host running an endpoint that:
 
 1. Listens on the configured endpoint port (UDP).
 2. Has `net.ipv4.ip_forward=1`, MASQUERADEs the tunnel subnet out to the internet.
@@ -26,7 +26,7 @@ You need a VPS / edge server running a WireGuard endpoint that:
 
 - **WireGuard Private Key** - this client's key (the peer the gateway accepts).
 - **WireGuard Server Public Key / Endpoint IP / Endpoint Port** - the gateway.
-- **WireGuard Tunnel Address** - e.g. `10.78.0.2/32`.
+- **WireGuard Tunnel Address** - e.g. `10.0.0.2/32`.
 - **BitTorrent Peer Port** - must match the gateway's DNAT and Transmission's `peer-port`.
 - **Allowed LAN / Docker Subnets** - so the web UI and *arr apps can reach Transmission past the kill-switch.
 

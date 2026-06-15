@@ -7,7 +7,7 @@
   "author": "tenequm",
   "port": 9091,
   "categories": ["media", "utilities"],
-  "description": "Transmission BitTorrent client whose traffic is forced through a self-hosted WireGuard VPN gateway (gluetun in custom mode). The gluetun container holds the network namespace and enforces a hard kill-switch: if the tunnel drops, no traffic leaks. Inbound peer connections arrive via a port forwarded on the gateway, giving Transmission a real open port (good download speed and seeding ratio) while egress exits through the gateway IP. Designed to pair with a VPS/edge server running a WireGuard endpoint that DNATs the peer port back over the tunnel.",
+  "description": "Transmission BitTorrent client whose traffic is forced through a self-hosted WireGuard VPN gateway (gluetun in custom mode). The gluetun container holds the network namespace and enforces a hard kill-switch: if the tunnel drops, no traffic leaks. Inbound peer connections arrive via a port forwarded on the gateway, giving Transmission a real open port (good download speed and seeding ratio) while egress exits through the gateway IP. Designed to pair with a WireGuard gateway that forwards the peer port back over the tunnel.",
   "tipi_version": 1,
   "version": "4.1.2",
   "min_tipi_version": "4.5.0",
@@ -36,14 +36,14 @@
     {
       "type": "text",
       "label": "WireGuard Endpoint IP",
-      "hint": "Public IP of your VPN gateway / edge server.",
+      "hint": "Public IP of your VPN gateway.",
       "required": true,
       "env_variable": "TRANSMISSION_WG_ENDPOINT_IP"
     },
     {
       "type": "text",
       "label": "WireGuard Endpoint Port",
-      "placeholder": "51821",
+      "placeholder": "51820",
       "hint": "UDP port the gateway's WireGuard interface listens on.",
       "required": true,
       "env_variable": "TRANSMISSION_WG_ENDPOINT_PORT"
@@ -51,7 +51,7 @@
     {
       "type": "text",
       "label": "WireGuard Tunnel Address",
-      "placeholder": "10.78.0.2/32",
+      "placeholder": "10.0.0.2/32",
       "hint": "This client's address inside the tunnel.",
       "required": true,
       "env_variable": "TRANSMISSION_WG_ADDRESSES"
@@ -59,15 +59,15 @@
     {
       "type": "text",
       "label": "BitTorrent Peer Port",
-      "placeholder": "56910",
-      "hint": "Must match the port DNAT-forwarded on the gateway and Transmission's peer-port in settings.json.",
+      "placeholder": "51413",
+      "hint": "Must match the port forwarded on the gateway and Transmission's peer-port in settings.json.",
       "required": true,
       "env_variable": "TRANSMISSION_PEER_PORT"
     },
     {
       "type": "text",
       "label": "Allowed LAN / Docker Subnets",
-      "placeholder": "192.168.1.0/24,172.18.0.0/16",
+      "placeholder": "192.168.0.0/16,172.18.0.0/16",
       "hint": "Comma-separated subnets allowed to bypass the kill-switch (LAN + Runtipi docker network) so the web UI and *arr apps can reach Transmission.",
       "required": true,
       "env_variable": "TRANSMISSION_LAN_SUBNETS"
