@@ -1,0 +1,41 @@
+services:
+  gluetun:
+    image: qmcgaw/gluetun:v3.40
+    environment:
+      - VPN_SERVICE_PROVIDER=custom
+      - VPN_TYPE=wireguard
+      - WIREGUARD_PRIVATE_KEY=${DISPATCHARR_WG_PRIVATE_KEY}
+      - WIREGUARD_PUBLIC_KEY=${DISPATCHARR_WG_SERVER_PUBKEY}
+      - WIREGUARD_ENDPOINT_IP=${DISPATCHARR_WG_ENDPOINT_IP}
+      - WIREGUARD_ENDPOINT_PORT=${DISPATCHARR_WG_ENDPOINT_PORT}
+      - WIREGUARD_ADDRESSES=${DISPATCHARR_WG_ADDRESSES}
+      - FIREWALL_INPUT_PORTS=9191
+      - FIREWALL_OUTBOUND_SUBNETS=${DISPATCHARR_LAN_SUBNETS}
+      - TZ=${TZ}
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    x-runtipi:
+      internal_port: 9191
+      is_main: true
+  dispatcharr:
+    image: ghcr.io/dispatcharr/dispatcharr:latest
+    volumes:
+      - ${APP_DATA_DIR}/data:/data
+    environment:
+      - DISPATCHARR_ENV=aio
+      - REDIS_HOST=localhost
+      - CELERY_BROKER_URL=redis://localhost:6379/0
+      - DISPATCHARR_LOG_LEVEL=info
+      - TZ=${TZ}
+    devices:
+      - /dev/dri:/dev/dri
+    group_add:
+      - "993"
+    depends_on:
+      gluetun:
+        condition: service_healthy
+    network_mode: service:gluetun
+x-runtipi:
+  schema_version: 2
