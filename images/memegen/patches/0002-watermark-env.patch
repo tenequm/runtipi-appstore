@@ -1,0 +1,22 @@
+diff --git a/app/settings.py b/app/settings.py
+index 4b148f8..a6a68fc 100644
+--- a/app/settings.py
++++ b/app/settings.py
+@@ -53,12 +53,12 @@ MINIMUM_FRAMES = 5
+ 
+ # Watermarks
+ 
+-DISABLED_WATERMARK = "none"
+-DEFAULT_WATERMARK = "Memegen.link"
+-ALLOWED_WATERMARKS = [DEFAULT_WATERMARK]
++DISABLED_WATERMARK = os.environ.get("DISABLED_WATERMARK", "none")
++DEFAULT_WATERMARK = os.environ.get("DEFAULT_WATERMARK", "Memegen.link")
++ALLOWED_WATERMARKS = os.environ.get("ALLOWED_WATERMARKS", DEFAULT_WATERMARK).split(",")
+ 
+-WATERMARK_HEIGHT = 20
+-WATERMARK_ALPHA = 0.65
++WATERMARK_HEIGHT = int(os.environ.get("WATERMARK_HEIGHT", "20"))
++WATERMARK_ALPHA = float(os.environ.get("WATERMARK_ALPHA", "0.65"))
+ 
+ PREVIEW_TEXT = "PREVIEW"
+ 

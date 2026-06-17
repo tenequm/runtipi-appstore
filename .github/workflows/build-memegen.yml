@@ -26,7 +26,7 @@ concurrency:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}/memegen
-  VERSION: "1.2.1"
+  VERSION: "1.3.0"
   # Pinned jacebrowning/memegen commit (2026-06-16). Bump to track upstream.
   MEMEGEN_REF: 6e559ceda8bf43caa81072be2d9885adac693f94
 
@@ -91,10 +91,15 @@ jobs:
           ref: ${{ env.MEMEGEN_REF }}
           path: memegen-src
 
-      - name: Patch memegen for MP4 templates
+      - name: Apply memegen patches
+        # 0001: MP4 animated source/output support.
+        # 0002: make watermark settings env-driven so runtipi (docker-compose)
+        #       can override them - e.g. DEFAULT_WATERMARK= removes the stamp.
         run: |
-          git -C memegen-src apply --verbose "$GITHUB_WORKSPACE/images/memegen/patches/0001-mp4-source.patch"
-          echo "Applied MP4 source/output patch"
+          for p in "$GITHUB_WORKSPACE"/images/memegen/patches/*.patch; do
+            git -C memegen-src apply --verbose "$p"
+            echo "Applied $(basename "$p")"
+          done
 
       - name: Bake in extra templates
         run: |
