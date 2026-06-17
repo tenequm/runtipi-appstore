@@ -1,6 +1,6 @@
 services:
   memegen:
-    image: ghcr.io/tenequm/runtipi-appstore/memegen:1.2.0
+    image: ghcr.io/tenequm/runtipi-appstore/memegen:1.2.1
     environment:
       - TZ=${TZ}
       # Tells memegen its public hostname so generated meme URLs (and /docs) are

@@ -18,14 +18,10 @@ text:
     start: 0.0
     stop: 1.0
 example:
-  - This is Bill.
-
-Bill is on the internet.
-
-Bill sees something that offends him.
-
-Bill moves on.
-
-Bill is smart.
-
-Be like Bill.
+  - |-
+    This is Bill.
+    Bill is on the internet.
+    Bill sees something that offends him.
+    Bill moves on.
+    Bill is smart.
+    Be like Bill.
