@@ -138,12 +138,17 @@ python3 scripts/vlm-markup-templates.py --source imgflip --limit 5 --output-dir 
 ```
 
 Notes:
-- Default model `google/gemini-3.5-flash` - top of the Roboflow Vision Evals
-  (May 2026) for spatial reasoning, ~3x faster than Gemini 3.1 Pro, and cheap.
-  Swap with `--model` (e.g. `qwen/qwen3-vl-235b-a22b-instruct`). Don't confuse it
-  with Nano Banana / `gemini-3-pro-image` - those generate images, they don't
-  return coordinates. Coordinates use the `[ymin, xmin, ymax, xmax]` 0-1000
-  convention internally.
+- Default model `google/gemini-3.5-flash` - tops the 2026-05 Roboflow Vision
+  Evals for spatial reasoning and was visibly tighter than the lite models on
+  3+ panel layouts (Drake, Left Exit 12, UNO) in testing. Swap with `--model`
+  (e.g. `google/gemini-3.1-flash-lite` to trade some multi-panel accuracy for
+  ~10x lower cost, or `qwen/qwen3-vl-235b-a22b-instruct`). Don't confuse with
+  Nano Banana / `gemini-3-pro-image` - those generate images, not coordinates.
+  Coordinates use the `[ymin, xmin, ymax, xmax]` 0-1000 convention internally.
+- `--reasoning-effort low` (default) caps the thinking budget. 3.5-flash thinks
+  at `medium` by default; this task is simple, so `low` matched `medium` quality
+  in testing while cutting ~36% of the cost (~$0.0068 vs $0.0107/template). Use
+  `minimal` to push cheaper, `high` only for unusually tricky layouts.
 - It's **one-shot** markup (no render-verify loop), good for ~90% of templates;
   a few oddball layouts (diagonal text, speech bubbles, >4 panels) still want a
   manual nudge. Re-run with `--overwrite` to redo a template.
@@ -151,11 +156,24 @@ Notes:
   feed a `--source dir` folder or a `--source manifest` catalog of blanks - no
   single API hands out a ranked "top 500".
 
-## Licensing note
+## Template images, licensing, and takedown requests
 
-memegen's code is MIT. The template **images** (Drake, film/TV stills, etc.) are
-copyrighted by their owners - the same legal posture as anyone running
-memegen.link or the upstream image. Shipping them in a public image is a
-deliberate choice for this personal app store. For zero redistribution exposure,
-drop `extra-templates/` and rely on the `?background=<url>` custom-background
-endpoint instead.
+The code, build scripts, and template `config.yml` markup in this repository are
+MIT-licensed (see the repository root `LICENSE`). That MIT license does **not**
+extend to the template background images.
+
+The images under `extra-templates/` are well-known internet meme formats whose
+underlying photos, film stills, and artwork are owned by their respective
+copyright holders. They are included in good faith for the same
+nominative/transformative use that meme-generation tools rely on (the same legal
+posture as anyone running memegen.link or the upstream image), and **no claim of
+ownership is made over them**. Shipping them in a public image is a deliberate
+choice for this personal app store.
+
+If you are a rights holder and want a template image removed, email
+**misha@kolesnik.io** with the template name (its folder under
+`extra-templates/`) and proof of rights. Removal requests are honored promptly -
+typically within a few days.
+
+For zero redistribution exposure, drop `extra-templates/` and rely on the
+`?background=<url>` custom-background endpoint instead.

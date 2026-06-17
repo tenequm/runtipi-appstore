@@ -1,42 +1,47 @@
 name: Flex Tape
 source: https://imgflip.com/memetemplate/166969924
 keywords:
-  -
+  - phil swift
+  - slapping
+  - leak
+  - water tank
+  - tape
+  - fix
 text:
   - style: upper
     color: white
     font: thick
-    anchor_x: 0.0
-    anchor_y: 0.0
+    anchor_x: 0.1
+    anchor_y: 0.1
     angle: 0.0
-    scale_x: 1.0
-    scale_y: 0.2
+    scale_x: 0.32
+    scale_y: 0.25
     align: center
     start: 0.0
     stop: 1.0
   - style: upper
     color: white
     font: thick
-    anchor_x: 0.0
-    anchor_y: 0.4
+    anchor_x: 0.65
+    anchor_y: 0.15
     angle: 0.0
-    scale_x: 1.0
-    scale_y: 0.2
+    scale_x: 0.3
+    scale_y: 0.25
     align: center
     start: 0.0
     stop: 1.0
   - style: upper
     color: white
     font: thick
-    anchor_x: 0.0
-    anchor_y: 0.8
+    anchor_x: 0.55
+    anchor_y: 0.615
     angle: 0.0
-    scale_x: 1.0
-    scale_y: 0.2
+    scale_x: 0.26
+    scale_y: 0.175
     align: center
     start: 0.0
     stop: 1.0
 example:
-  - top text
-  - bottom text
-  - third line
+  - Me
+  - A massive problem
+  - A temporary fix

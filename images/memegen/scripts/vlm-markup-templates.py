@@ -14,11 +14,13 @@ easy-mode grounding this task needs (a few big regions on a near-blank canvas).
 Coordinate convention: boxes are [ymin, xmin, ymax, xmax] normalized 0-1000
 (Y FIRST) - the format Gemini's object-detection training emits.
 
-Model: default google/gemini-3.5-flash - top of the Roboflow Vision Evals
-(2026-05-22) for spatial reasoning + counting, ~3x faster than Gemini 3.1 Pro.
-Swap with --model (e.g. qwen/qwen3-vl-235b-a22b-instruct). Not to be confused
-with Nano Banana / gemini-3-pro-image, which GENERATE images rather than return
-coordinates.
+Model: default google/gemini-3.1-flash-lite. This task is simple (2-4 big
+regions on a near-blank canvas), and flash-lite matches the pricier 3.5-flash on
+both box position and text-color choice here, at ~15x lower cost (~$0.0007 per
+template, ~$0.35 for 500). Swap with --model: google/gemini-3.5-flash for the
+hardest layouts (it tops the 2026-05 Roboflow Vision Evals for spatial
+reasoning), or qwen/qwen3-vl-235b-a22b-instruct. Not to be confused with Nano
+Banana / gemini-3-pro-image, which GENERATE images rather than return coordinates.
 
 Output: writes <output-dir>/<slug>/{config.yml, default.<ext>} - the same
 folder shape the build copies into memegen's templates/. Defaults to
@@ -52,10 +54,15 @@ import json
 import os
 import re
 import sys
+import threading
 import time
 import urllib.parse
 import urllib.request
 from pathlib import Path
+
+# Thread-safe running totals (OpenRouter reports per-call cost in-band).
+_TOTALS = {"cost": 0.0, "prompt_tokens": 0, "completion_tokens": 0, "calls": 0, "cost_known": 0}
+_TOTALS_LOCK = threading.Lock()
 
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 GET_MEMES = "https://api.imgflip.com/get_memes"
@@ -103,7 +110,9 @@ Rules:
 # ----- helpers ------------------------------------------------------------
 
 def slugify(name: str) -> str:
-    s = re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-")
+    # Drop apostrophes first so "I'm"/"that's" -> "im"/"thats", not "-m-"/"-s-".
+    s = name.lower().replace("'", "").replace("’", "")
+    s = re.sub(r"[^a-z0-9]+", "-", s).strip("-")
     return re.sub(r"-+", "-", s) or "template"
 
 
@@ -182,11 +191,16 @@ def http_get(url: str, timeout: int = 30) -> bytes:
 
 
 def call_openrouter(model: str, api_key: str, image_b64: str, mime: str, name: str,
-                    box_count: int | None, retries: int = 3) -> dict:
+                    box_count: int | None, effort: str, retries: int = 3) -> dict:
     hint = f" It conventionally has {box_count} caption area(s)." if box_count else ""
     payload = {
         "model": model,
         "temperature": 0,
+        "usage": {"include": True},
+        # Cap thinking: this is simple spatial work, so we don't pay for the
+        # model's default (medium) reasoning budget. OpenRouter maps effort ->
+        # Gemini thinkingLevel (minimal|low|medium|high).
+        "reasoning": {"effort": effort},
         "response_format": {"type": "json_object"},
         "messages": [
             {"role": "system", "content": SYSTEM_PROMPT},
@@ -212,6 +226,14 @@ def call_openrouter(model: str, api_key: str, image_b64: str, mime: str, name: s
             req = urllib.request.Request(OPENROUTER_URL, data=body, headers=headers, method="POST")
             with urllib.request.urlopen(req, timeout=90) as resp:
                 data = json.load(resp)
+            usage = data.get("usage") or {}
+            with _TOTALS_LOCK:
+                _TOTALS["calls"] += 1
+                _TOTALS["prompt_tokens"] += usage.get("prompt_tokens", 0)
+                _TOTALS["completion_tokens"] += usage.get("completion_tokens", 0)
+                if usage.get("cost") is not None:
+                    _TOTALS["cost"] += usage["cost"]
+                    _TOTALS["cost_known"] += 1
             content = data["choices"][0]["message"]["content"]
             content = re.sub(r"^```(?:json)?|```$", "", content.strip(), flags=re.MULTILINE).strip()
             return json.loads(content)
@@ -288,7 +310,7 @@ def process(item: dict, args, api_key: str, up_ids: set[str], up_names: set[str]
     mime = {"jpg": "image/jpeg", "png": "image/png", "gif": "image/gif", "webp": "image/webp"}.get(ext, "image/jpeg")
     b64 = base64.b64encode(raw).decode()
 
-    result = call_openrouter(args.model, api_key, b64, mime, name, item.get("box_count"))
+    result = call_openrouter(args.model, api_key, b64, mime, name, item.get("box_count"), args.reasoning_effort)
     raw_boxes = result.get("boxes") or []
     if not raw_boxes:
         raise RuntimeError("model returned no boxes")
@@ -344,6 +366,9 @@ def main() -> None:
     ap.add_argument("--manifest", type=Path, help="catalog JSON (--source manifest)")
     ap.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT)
     ap.add_argument("--model", default="google/gemini-3.5-flash")
+    ap.add_argument("--reasoning-effort", default="low", choices=["minimal", "low", "medium", "high"],
+                    help="thinking level (OpenRouter effort -> Gemini thinkingLevel); low is plenty "
+                         "for this simple task and avoids the 'medium' default's thinking-token cost")
     ap.add_argument("--limit", type=int, default=500)
     ap.add_argument("--concurrency", type=int, default=8)
     ap.add_argument("--memegen-dir", type=Path, help="dedupe against an upstream memegen checkout")
@@ -383,6 +408,10 @@ def main() -> None:
                 print(f"  FAIL  {slugify(it['name']):40s} {e}")
 
     print(f"\ndone: {ok} ok, {fail} failed -> {args.output_dir}")
+    t = _TOTALS
+    print(f"cost: ${t['cost']:.4f} over {t['calls']} api call(s) "
+          f"({t['prompt_tokens']:,} in + {t['completion_tokens']:,} out tokens)"
+          + ("" if t["cost_known"] == t["calls"] else f"; cost reported for {t['cost_known']}/{t['calls']}"))
 
 
 if __name__ == "__main__":

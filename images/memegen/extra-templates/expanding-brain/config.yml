@@ -1,54 +1,58 @@
 name: Expanding Brain
 source: https://imgflip.com/memetemplate/93895088
 keywords:
-  -
+  - expanding brain
+  - galaxy brain
+  - four panels
+  - intelligence
+  - levels
 text:
   - style: upper
-    color: white
+    color: black
     font: thick
     anchor_x: 0.0
     anchor_y: 0.0
     angle: 0.0
-    scale_x: 1.0
-    scale_y: 0.2
+    scale_x: 0.494
+    scale_y: 0.248
     align: center
     start: 0.0
     stop: 1.0
   - style: upper
-    color: white
+    color: black
     font: thick
     anchor_x: 0.0
-    anchor_y: 0.267
+    anchor_y: 0.251
     angle: 0.0
-    scale_x: 1.0
-    scale_y: 0.2
+    scale_x: 0.494
+    scale_y: 0.253
     align: center
     start: 0.0
     stop: 1.0
   - style: upper
-    color: white
+    color: black
     font: thick
     anchor_x: 0.0
-    anchor_y: 0.533
+    anchor_y: 0.507
     angle: 0.0
-    scale_x: 1.0
-    scale_y: 0.2
+    scale_x: 0.494
+    scale_y: 0.227
     align: center
     start: 0.0
     stop: 1.0
   - style: upper
-    color: white
+    color: black
     font: thick
     anchor_x: 0.0
-    anchor_y: 0.8
+    anchor_y: 0.742
     angle: 0.0
-    scale_x: 1.0
-    scale_y: 0.2
+    scale_x: 0.494
+    scale_y: 0.258
     align: center
     start: 0.0
     stop: 1.0
 example:
-  - top text
-  - bottom text
-  - third line
-  - fourth line
+  - "Using 'there', 'their', and 'they're' correctly"
+  - Using 'whom' in a sentence
+  - Using 'whomst' to sound smart
+  - Using 'whomst'd've' in casual conversation

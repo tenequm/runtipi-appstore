@@ -1,42 +1,45 @@
 name: Surprised Pikachu
 source: https://imgflip.com/memetemplate/155067746
 keywords:
-  -
+  - surprised pikachu
+  - pokemon
+  - shocked
+  - reaction
 text:
   - style: upper
-    color: white
+    color: black
     font: thick
-    anchor_x: 0.0
-    anchor_y: 0.0
+    anchor_x: 0.02
+    anchor_y: 0.02
     angle: 0.0
-    scale_x: 1.0
-    scale_y: 0.2
-    align: center
+    scale_x: 0.96
+    scale_y: 0.11
+    align: left
     start: 0.0
     stop: 1.0
   - style: upper
-    color: white
+    color: black
     font: thick
-    anchor_x: 0.0
-    anchor_y: 0.4
+    anchor_x: 0.02
+    anchor_y: 0.14
     angle: 0.0
-    scale_x: 1.0
-    scale_y: 0.2
-    align: center
+    scale_x: 0.96
+    scale_y: 0.11
+    align: left
     start: 0.0
     stop: 1.0
   - style: upper
-    color: white
+    color: black
     font: thick
-    anchor_x: 0.0
-    anchor_y: 0.8
+    anchor_x: 0.02
+    anchor_y: 0.26
     angle: 0.0
-    scale_x: 1.0
-    scale_y: 0.2
-    align: center
+    scale_x: 0.96
+    scale_y: 0.11
+    align: left
     start: 0.0
     stop: 1.0
 example:
-  - top text
-  - bottom text
-  - third line
+  - "Me: *does something stupid*"
+  - "The obvious consequence: *happens*"
+  - "Me:"

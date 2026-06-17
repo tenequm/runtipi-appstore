@@ -50,3 +50,5 @@ Templates are baked into the image at build time (each is a folder with a `confi
 ## Credits
 
 memegen is created and maintained by [Jace Browning](https://github.com/jacebrowning/memegen) (MIT licensed).
+
+> Bundled meme template images are third-party works included under fair/nominative use; the project claims no ownership. Rights holders: email misha@kolesnik.io for removal.

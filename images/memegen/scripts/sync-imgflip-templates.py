@@ -48,7 +48,9 @@ def normalize(name: str) -> str:
 
 def slugify(name: str) -> str:
     """memegen-style id: lowercase, hyphen-separated, alphanumeric."""
-    s = re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-")
+    # Drop apostrophes first so "I'm"/"that's" -> "im"/"thats", not "-m-"/"-s-".
+    s = name.lower().replace("'", "").replace("’", "")
+    s = re.sub(r"[^a-z0-9]+", "-", s).strip("-")
     return re.sub(r"-+", "-", s)
 
 

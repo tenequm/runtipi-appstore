@@ -1,0 +1,34 @@
+name: They don't know
+source: https://imgflip.com/memetemplate/284929871
+keywords:
+  - wojak
+  - party
+  - they don't know
+  - corner
+  - standing
+text:
+  - style: upper
+    color: black
+    font: thick
+    anchor_x: 0.31
+    anchor_y: 0.1
+    angle: 0.0
+    scale_x: 0.28
+    scale_y: 0.15
+    align: left
+    start: 0.0
+    stop: 1.0
+  - style: upper
+    color: black
+    font: thick
+    anchor_x: 0.11
+    anchor_y: 0.22
+    angle: 0.0
+    scale_x: 0.19
+    scale_y: 0.17
+    align: center
+    start: 0.0
+    stop: 1.0
+example:
+  - They don't know I'm a meme template
+  - Me
