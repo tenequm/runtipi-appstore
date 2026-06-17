@@ -31,16 +31,15 @@ So the final image contains **all ~200 upstream templates + every folder in
   `VERSION`. Bump both together on a release (and bump `tipi_version` +
   `updated_at` in `apps/memegen/config.json`).
 
-## One-time: make the GHCR package public
+## Package visibility
 
-The first push creates a **private** package. To let any Runtipi host pull it
-without auth, make it public once:
+The package is **public** (it inherited this repo's visibility), so any Runtipi
+host can pull `ghcr.io/tenequm/runtipi-appstore/memegen` with no auth.
 
+If a future package ever comes up **private** instead, flip it once:
 GitHub -> your profile/org -> **Packages** -> `memegen` -> **Package settings**
--> **Change visibility** -> **Public**.
-
-(GHCR packages pushed by `GITHUB_TOKEN` cannot be flipped to public from the
-workflow itself - it needs a one-time manual toggle or a PAT.)
+-> **Change visibility** -> **Public**. (GHCR packages pushed by
+`GITHUB_TOKEN` can't be flipped to public from the workflow itself.)
 
 ## Adding / editing templates
 
