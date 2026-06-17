@@ -6,7 +6,7 @@ public image (only a private Docker Hub on release).
 
 This directory holds everything needed to build and extend that image. The
 GitHub Actions workflow [`.github/workflows/build-memegen.yml`](../../.github/workflows/build-memegen.yml)
-builds it and pushes a multi-arch (amd64 + arm64) image to:
+builds it and pushes a linux/amd64 image to:
 
 ```
 ghcr.io/tenequm/runtipi-appstore/memegen:<VERSION>
@@ -17,7 +17,7 @@ ghcr.io/tenequm/runtipi-appstore/memegen:<VERSION>
 1. Check out our app store repo.
 2. Check out `jacebrowning/memegen` at the pinned `MEMEGEN_REF` commit.
 3. Copy `extra-templates/*` into memegen's own `templates/` directory.
-4. Build with memegen's `Containerfile` (BuildKit) for amd64 + arm64.
+4. Build with memegen's `Containerfile` (BuildKit) for linux/amd64.
 5. Push `:<VERSION>` and `:latest` to GHCR.
 
 So the final image contains **all ~200 upstream templates + every folder in

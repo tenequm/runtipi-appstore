@@ -12,7 +12,7 @@ A self-hosted instance of [memegen](https://github.com/jacebrowning/memegen): a 
   ```
 - **URL-driven API** - generate memes programmatically. Browse the interactive API at `/docs` and list every template at `/templates`.
 - **Animated output** - GIF and WebP supported for animated templates.
-- Multi-arch image (amd64 + arm64), built from source.
+- Built from source (linux/amd64).
 
 ## Usage
 
