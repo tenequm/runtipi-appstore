@@ -138,11 +138,11 @@ python3 scripts/vlm-markup-templates.py --source imgflip --limit 5 --output-dir 
 ```
 
 Notes:
-- Default model `google/gemini-2.5-flash` - cheap, native bounding boxes,
-  resize-robust. Swap with `--model` (e.g. `qwen/qwen3-vl-235b-a22b-instruct`
-  for higher grounding accuracy, `google/gemini-2.5-pro` for the hardest layouts).
-- Reasoning is **disabled** in the request - thinking measurably worsens
-  Gemini's box accuracy. Coordinates use the `[ymin, xmin, ymax, xmax]` 0-1000
+- Default model `google/gemini-3.5-flash` - top of the Roboflow Vision Evals
+  (May 2026) for spatial reasoning, ~3x faster than Gemini 3.1 Pro, and cheap.
+  Swap with `--model` (e.g. `qwen/qwen3-vl-235b-a22b-instruct`). Don't confuse it
+  with Nano Banana / `gemini-3-pro-image` - those generate images, they don't
+  return coordinates. Coordinates use the `[ymin, xmin, ymax, xmax]` 0-1000
   convention internally.
 - It's **one-shot** markup (no render-verify loop), good for ~90% of templates;
   a few oddball layouts (diagonal text, speech bubbles, >4 panels) still want a

@@ -11,13 +11,14 @@ actually look at the image and place boxes. Gemini Flash has a native
 0-1000 bounding-box capability that's cheap and resize-robust - ideal for the
 easy-mode grounding this task needs (a few big regions on a near-blank canvas).
 
-Two hard-won details baked in (see research notes in PR history):
-  * Coordinates are [ymin, xmin, ymax, xmax] normalized 0-1000 (Y FIRST).
-  * Reasoning/thinking is DISABLED - it measurably worsens Gemini's boxes.
+Coordinate convention: boxes are [ymin, xmin, ymax, xmax] normalized 0-1000
+(Y FIRST) - the format Gemini's object-detection training emits.
 
-Model: default google/gemini-2.5-flash. Swap with --model. Alternatives:
-  qwen/qwen3-vl-235b-a22b-instruct  (grounding accuracy leader, cheaper)
-  google/gemini-2.5-pro             (hardest layouts; ~10x cost)
+Model: default google/gemini-3.5-flash - top of the Roboflow Vision Evals
+(2026-05-22) for spatial reasoning + counting, ~3x faster than Gemini 3.1 Pro.
+Swap with --model (e.g. qwen/qwen3-vl-235b-a22b-instruct). Not to be confused
+with Nano Banana / gemini-3-pro-image, which GENERATE images rather than return
+coordinates.
 
 Output: writes <output-dir>/<slug>/{config.yml, default.<ext>} - the same
 folder shape the build copies into memegen's templates/. Defaults to
@@ -186,8 +187,6 @@ def call_openrouter(model: str, api_key: str, image_b64: str, mime: str, name: s
     payload = {
         "model": model,
         "temperature": 0,
-        # Disable reasoning: thinking measurably worsens Gemini's box accuracy.
-        "reasoning": {"enabled": False},
         "response_format": {"type": "json_object"},
         "messages": [
             {"role": "system", "content": SYSTEM_PROMPT},
@@ -344,7 +343,7 @@ def main() -> None:
     ap.add_argument("--input-dir", type=Path, help="blank images dir (--source dir)")
     ap.add_argument("--manifest", type=Path, help="catalog JSON (--source manifest)")
     ap.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT)
-    ap.add_argument("--model", default="google/gemini-2.5-flash")
+    ap.add_argument("--model", default="google/gemini-3.5-flash")
     ap.add_argument("--limit", type=int, default=500)
     ap.add_argument("--concurrency", type=int, default=8)
     ap.add_argument("--memegen-dir", type=Path, help="dedupe against an upstream memegen checkout")
