@@ -53,6 +53,7 @@ import concurrent.futures
 import json
 import os
 import re
+import subprocess
 import sys
 import threading
 import time
@@ -190,6 +191,34 @@ def http_get(url: str, timeout: int = 30) -> bytes:
         return resp.read()
 
 
+def extract_video_frame(path: Path) -> bytes:
+    """Grab a representative (~midpoint) frame from an MP4 as JPEG bytes, to show
+    the VLM (it marks up caption geometry, which is the same across the clip).
+    Needs ffmpeg/ffprobe on PATH."""
+    dur = 0.0
+    try:
+        out = subprocess.check_output(
+            ["ffprobe", "-v", "error", "-show_entries", "format=duration",
+             "-of", "default=noprint_wrappers=1:nokey=1", str(path)],
+            stderr=subprocess.DEVNULL).decode().strip()
+        dur = float(out)
+    except Exception:  # noqa: BLE001
+        dur = 0.0
+    ts = max(0.0, dur * 0.5)
+    proc = subprocess.run(
+        ["ffmpeg", "-v", "error", "-ss", f"{ts:.3f}", "-i", str(path),
+         "-frames:v", "1", "-f", "image2", "-c:v", "mjpeg", "-"],
+        stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+    if proc.returncode != 0 or not proc.stdout:  # seek past end on tiny clips -> first frame
+        proc = subprocess.run(
+            ["ffmpeg", "-v", "error", "-i", str(path), "-frames:v", "1",
+             "-f", "image2", "-c:v", "mjpeg", "-"],
+            stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+    if not proc.stdout:
+        raise RuntimeError(f"ffmpeg could not extract a frame from {path}")
+    return proc.stdout
+
+
 def call_openrouter(model: str, api_key: str, image_b64: str, mime: str, name: str,
                     box_count: int | None, effort: str, retries: int = 3) -> dict:
     hint = f" It conventionally has {box_count} caption area(s)." if box_count else ""
@@ -294,7 +323,7 @@ def source_staging(staging_dir: Path, limit: int) -> list[dict]:
 
 
 def source_dir(input_dir: Path, limit: int) -> list[dict]:
-    exts = {".jpg", ".jpeg", ".png", ".gif", ".webp"}
+    exts = {".jpg", ".jpeg", ".png", ".gif", ".webp", ".mp4"}
     files = sorted(p for p in input_dir.iterdir() if p.suffix.lower() in exts)
     out = []
     for p in files[:limit]:
@@ -327,10 +356,19 @@ def process(item: dict, args, api_key: str, up_ids: set[str], up_names: set[str]
         ext = (Path(urllib.parse.urlparse(item["url"]).path).suffix.lstrip(".").lower() or "jpg")
     if ext == "jpeg":
         ext = "jpg"
-    mime = {"jpg": "image/jpeg", "png": "image/png", "gif": "image/gif", "webp": "image/webp"}.get(ext, "image/jpeg")
-    b64 = base64.b64encode(raw).decode()
 
-    result = call_openrouter(args.model, api_key, b64, mime, name, item.get("box_count"), args.reasoning_effort)
+    # MP4 is an animated source memegen reads via PyAV: the VLM can't see video,
+    # so we mark up a representative still frame but persist the .mp4 itself.
+    is_video = ext == "mp4"
+    if is_video:
+        frame_jpeg = extract_video_frame(item["path"])
+        vlm_b64, vlm_mime = base64.b64encode(frame_jpeg).decode(), "image/jpeg"
+    else:
+        vlm_b64 = base64.b64encode(raw).decode()
+        vlm_mime = {"jpg": "image/jpeg", "png": "image/png", "gif": "image/gif",
+                    "webp": "image/webp"}.get(ext, "image/jpeg")
+
+    result = call_openrouter(args.model, api_key, vlm_b64, vlm_mime, name, item.get("box_count"), args.reasoning_effort)
     raw_boxes = result.get("boxes") or []
     if not raw_boxes:
         raise RuntimeError("model returned no boxes")
@@ -357,7 +395,12 @@ def process(item: dict, args, api_key: str, up_ids: set[str], up_names: set[str]
     )
     (folder / "config.yml").write_text(yml)
     (folder / f"default.{ext}").write_bytes(raw)
-    return f"  new   {slug:40s} boxes={len(text_boxes)} -> default.{ext}"
+    extra = ""
+    # keep-both templates: also emit a static still so /<id>/a/b.png works
+    if is_video and (args.static_all or slug in args.static_slugs):
+        (folder / "default.jpg").write_bytes(frame_jpeg)
+        extra = " (+static default.jpg)"
+    return f"  new   {slug:40s} boxes={len(text_boxes)} -> default.{ext}{extra}"
 
 
 def load_upstream(memegen_dir: Path | None) -> tuple[set[str], set[str]]:
@@ -395,7 +438,13 @@ def main() -> None:
     ap.add_argument("--memegen-dir", type=Path, help="dedupe against an upstream memegen checkout")
     ap.add_argument("--overwrite", action="store_true")
     ap.add_argument("--dry-run", action="store_true", help="call the model but don't write files")
+    ap.add_argument("--static-slugs", default="",
+                    help="comma-separated slugs (or 'all') that also get a static default.jpg "
+                         "still extracted from the mp4 (keep-both templates)")
     args = ap.parse_args()
+    args.static_all = args.static_slugs.strip().lower() == "all"
+    args.static_slugs = set() if args.static_all else {
+        s.strip() for s in args.static_slugs.split(",") if s.strip()}
 
     api_key = os.environ.get("OPENROUTER_API_KEY")
     if not api_key:

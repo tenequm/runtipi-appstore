@@ -16,9 +16,10 @@ ghcr.io/tenequm/runtipi-appstore/memegen:<VERSION>
 
 1. Check out our app store repo.
 2. Check out `jacebrowning/memegen` at the pinned `MEMEGEN_REF` commit.
-3. Copy `extra-templates/*` into memegen's own `templates/` directory.
-4. Build with memegen's `Containerfile` (BuildKit) for linux/amd64.
-5. Push `:<VERSION>` and `:latest` to GHCR.
+3. Apply `patches/0001-mp4-source.patch` (adds MP4 animated source + output; see below).
+4. Copy `extra-templates/*` into memegen's own `templates/` directory.
+5. Build with memegen's `Containerfile` (BuildKit) for linux/amd64.
+6. Push `:<VERSION>` and `:latest` to GHCR.
 
 So the final image contains **all ~200 upstream templates + every folder in
 `extra-templates/`** as first-class built-in templates. Custom backgrounds
@@ -41,6 +42,43 @@ GitHub -> your profile/org -> **Packages** -> `memegen` -> **Package settings**
 -> **Change visibility** -> **Public**. (GHCR packages pushed by
 `GITHUB_TOKEN` can't be flipped to public from the workflow itself.)
 
+## Animated (MP4) templates
+
+Upstream memegen reads animated sources as GIF/WebP only (Pillow can't decode
+MP4). `patches/0001-mp4-source.patch` adds **MP4** as both an animated *source*
+and an *output* format, decoding/encoding via PyAV (its manylinux wheel bundles
+ffmpeg). The patch is small (5 files) and applied in CI right after the upstream
+checkout; re-roll it if you bump `MEMEGEN_REF`:
+
+```bash
+# regenerate against a fresh checkout at the new ref
+git -C <memegen-checkout> apply images/memegen/patches/0001-mp4-source.patch  # edit, then:
+git -C <memegen-checkout> diff > images/memegen/patches/0001-mp4-source.patch
+```
+
+A template is animated when its folder has `default.mp4` (or `default.gif` /
+`default.webp`). Storing MP4 keeps the repo small - a 10s clip is ~30-700 KB vs
+multi-MB as GIF. Render it to any animated extension:
+
+```
+/images/<id>/top/bottom.gif     # or .webp, or .mp4 (native, H.264 yuv420p +faststart)
+/images/<id>/top/bottom.png     # first frame, if a static default.jpg is also present
+```
+
+A folder with **both** `default.mp4` and a static `default.jpg` serves animated
+extensions from the MP4 and static extensions (`.png`/`.jpg`) from the still -
+useful when the joke also reads as a single frame. Animated-only formats (where
+motion is the whole point) ship just `default.mp4`.
+
+`vlm-markup-templates.py` marks up MP4s too: it extracts a representative frame
+for the VLM (ffmpeg), writes `default.mp4`, and with `--static-slugs <a,b,...>`
+(or `all`) also writes a `default.jpg` still for the keep-both templates.
+
+```bash
+python3 scripts/vlm-markup-templates.py --source dir --input-dir /path/to/mp4s \
+    --output-dir extra-templates --static-slugs they-dont-know,flex-tape,...
+```
+
 ## Adding / editing templates
 
 A memegen template is just a folder:
@@ -48,7 +86,7 @@ A memegen template is just a folder:
 ```
 extra-templates/<id>/
     config.yml        # text-box geometry + metadata
-    default.png       # blank background (png/jpg/gif/webp)
+    default.png       # blank background (png/jpg/gif/webp/mp4)
 ```
 
 `config.yml` text-box fields (all coordinates are **fractions** of the image,

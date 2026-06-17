@@ -1,0 +1,207 @@
+diff --git a/Containerfile b/Containerfile
+index b060f7a..a460aa5 100644
+--- a/Containerfile
++++ b/Containerfile
+@@ -28,6 +28,8 @@ COPY --chown=memegen CHANGELOG.md /opt/memegen/CHANGELOG.md
+ 
+ # Install project dependencies
+ RUN poetry install --only=main
++# PyAV for MP4 animated templates (manylinux wheel bundles ffmpeg; into poetry's venv)
++RUN poetry run pip install av==17.1.0
+ 
+ # Set environment variables
+ ENV PATH="/opt/memegen/.local/bin:${PATH}"
+diff --git a/app/models/template.py b/app/models/template.py
+index 99aa91a..f0dd50f 100644
+--- a/app/models/template.py
++++ b/app/models/template.py
+@@ -68,7 +68,7 @@ class Template:
+                 continue
+             if path.stem not in {"config", "default"}:
+                 styles.append(path.stem)
+-            elif path.name == "default.gif":
++            elif path.stem == "default" and path.suffix.lstrip(".") in settings.ANIMATED_EXTENSIONS:
+                 styles.append("animated")
+         if styles or self.overlay != [Overlay()]:
+             styles.append("default")
+@@ -132,7 +132,7 @@ class Template:
+ 
+         if animated:
+             for path in paths:
+-                if path.suffix == ".gif":
++                if path.suffix.lstrip(".") in settings.ANIMATED_EXTENSIONS:
+                     logger.log(level, f"Matched path by suffix: {path}")
+                     return path
+ 
+@@ -142,18 +142,21 @@ class Template:
+                     return path
+         else:
+             for path in paths:
+-                if path.suffix != ".gif":
++                if path.suffix.lstrip(".") not in settings.ANIMATED_EXTENSIONS:
+                     logger.log(level, f"Matched path by suffix: {path}")
+                     return path
+             for path in paths:
+-                if path.stem == style:
++                # Don't fall back to an animated source for a STATIC request when
++                # it can't be opened as a still (mp4); other animated stems are fine.
++                if path.stem == style and path.suffix != ".mp4":
+                     logger.log(level, f"Matched path by stem: {path}")
+                     return path
+ 
+-        path = self.directory / "default.gif"
+-        if path.exists():
+-            logger.log(level, f"Matched path by default: {path}")
+-            return path
++        for ext in sorted(settings.ANIMATED_EXTENSIONS):
++            path = self.directory / f"default.{ext}"
++            if path.exists():
++                logger.log(level, f"Matched path by default: {path}")
++                return path
+ 
+         if style == "default" and not animated:
+             logger.info(f"No default background image for template: {self.id}")
+diff --git a/app/settings.py b/app/settings.py
+index 4b148f8..dc4ae7e 100644
+--- a/app/settings.py
++++ b/app/settings.py
+@@ -35,8 +35,8 @@ MINIMUM_FONT_SIZE = 7
+ 
+ IMAGES_DIRECTORY = ROOT / "images"
+ 
+-ALLOWED_EXTENSIONS = {"gif", "jpg", "jpeg", "png", "webp"}
+-ANIMATED_EXTENSIONS = {"gif", "webp"}
++ALLOWED_EXTENSIONS = {"gif", "jpg", "jpeg", "png", "webp", "mp4"}
++ANIMATED_EXTENSIONS = {"gif", "webp", "mp4"}
+ 
+ DEFAULT_STATIC_EXTENSION = os.environ.get("DEFAULT_STATIC_EXTENSION", "png")
+ DEFAULT_ANIMATED_EXTENSION = os.environ.get("DEFAULT_ANIMATED_EXTENSION", "gif")
+diff --git a/app/utils/images.py b/app/utils/images.py
+index 271b310..c4405fc 100644
+--- a/app/utils/images.py
++++ b/app/utils/images.py
+@@ -5,6 +5,7 @@ from contextlib import contextmanager
+ from pathlib import Path
+ from typing import Iterator, cast
+ 
++import av
+ import emoji
+ import webp
+ from PIL import (
+@@ -114,6 +115,19 @@ def save(
+         fps = round(1 / duration * 1000, 2)
+         logger.info(f"Saving {count} frames as WebP at {fps} frame/s")
+         webp.save_images(frames, str(path), fps=fps, lossless=False)
++    elif extension == "mp4":
++        frames, duration = render_animation(
++            template,
++            style,
++            lines,
++            size,
++            font_name,
++            maximum_frames or settings.MAXIMUM_FRAMES * 4,
++            watermark=watermark,
++        )
++        fps = max(1, round(1000 / duration)) if duration else 25
++        logger.info(f"Saving {len(frames)} frames as MP4 at {fps} fps")
++        save_mp4(frames, str(path), fps)
+     else:
+         image = render_image(
+             template, style, lines, size, font_name, watermark=watermark
+@@ -123,8 +137,40 @@ def save(
+     return path
+ 
+ 
++def decode_mp4(path: Path) -> tuple[list[ImageType], int, int]:
++    """Decode an MP4 into RGB frames + per-frame duration (ms) + frame count.
++
++    Pillow can't read MP4, so both static (first-frame) and animated rendering
++    route video sources through PyAV (its wheels bundle ffmpeg)."""
++    with av.open(str(path)) as container:
++        stream = container.streams.video[0]
++        rate = float(stream.average_rate) if stream.average_rate else 25.0
++        frames = [frame.to_image() for frame in container.decode(stream)]
++    duration = round(1000 / rate) if rate else 100
++    return frames, duration, len(frames)
++
++
++def save_mp4(frames: list[ImageType], path: str, fps: int) -> None:
++    """Encode frames to a social-friendly H.264 MP4 (yuv420p, +faststart, no audio)."""
++    w, h = frames[0].size
++    w -= w % 2  # H.264 yuv420p needs even dimensions
++    h -= h % 2
++    with av.open(path, mode="w", options={"movflags": "+faststart"}) as container:
++        stream = container.add_stream("libx264", rate=fps)
++        stream.width, stream.height = w, h
++        stream.pix_fmt = "yuv420p"
++        stream.options = {"crf": "23"}
++        for img in frames:
++            frame = av.VideoFrame.from_image(img.convert("RGB").resize((w, h)))
++            container.mux(stream.encode(frame))
++        container.mux(stream.encode())
++
++
+ def load(path: Path) -> ImageType:
+-    image = Image.open(path).convert("RGBA")
++    if path.suffix == ".mp4":
++        image = decode_mp4(path)[0][0].convert("RGBA")
++    else:
++        image = Image.open(path).convert("RGBA")
+     image = cast(ImageType, ImageOps.exif_transpose(image))
+     return image
+ 
+@@ -382,23 +428,27 @@ def render_animation(
+     frames = []
+ 
+     pad = all(size) if pad is None else pad
+-    source = Image.open(template.get_image(style, animated=True))
+-    duration = source.info.get("duration", 100)
+-    total = getattr(source, "n_frames", 1)
+-    if total > 1:
+-        sources = ImageSequence.Iterator(source)
+-    elif template.animated_text:
+-        sources = [source] * settings.MAXIMUM_FRAMES  # type: ignore
+-        duration = 250
+-        total = settings.MAXIMUM_FRAMES
+-    elif sum(1 for line in lines if line.strip()) == 2:
+-        template.animate()
+-        sources = [source] * settings.MINIMUM_FRAMES  # type: ignore
+-        duration = 1200
+-        total = settings.MINIMUM_FRAMES
++    image_path = template.get_image(style, animated=True)
++    if image_path.suffix == ".mp4":
++        sources, duration, total = decode_mp4(image_path)  # type: ignore[assignment]
+     else:
+-        sources = [source]  # type: ignore
+-        total = 1
++        source = Image.open(image_path)
++        duration = source.info.get("duration", 100)
++        total = getattr(source, "n_frames", 1)
++        if total > 1:
++            sources = ImageSequence.Iterator(source)
++        elif template.animated_text:
++            sources = [source] * settings.MAXIMUM_FRAMES  # type: ignore
++            duration = 250
++            total = settings.MAXIMUM_FRAMES
++        elif sum(1 for line in lines if line.strip()) == 2:
++            template.animate()
++            sources = [source] * settings.MINIMUM_FRAMES  # type: ignore
++            duration = 1200
++            total = settings.MINIMUM_FRAMES
++        else:
++            sources = [source]  # type: ignore
++            total = 1
+ 
+     if maximum_frames >= total:
+         modulus = 1.0
+diff --git a/app/views/helpers.py b/app/views/helpers.py
+index 97dedd0..94196a2 100644
+--- a/app/views/helpers.py
++++ b/app/views/helpers.py
+@@ -263,5 +263,5 @@ async def render_image(
+             size=size,
+             maximum_frames=frames,
+         )
+-    mime_type = "image/webp" if path.suffix == ".webp" else None
++    mime_type = {".webp": "image/webp", ".mp4": "video/mp4"}.get(path.suffix)
+     return await response.file(path, status, mime_type=mime_type)

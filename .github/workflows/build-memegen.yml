@@ -16,6 +16,7 @@ on:
       # Only things that change image CONTENT - not scripts/README, which would
       # trigger pointless no-op rebuilds.
       - "images/memegen/extra-templates/**"
+      - "images/memegen/patches/**"
       - ".github/workflows/build-memegen.yml"
 
 concurrency:
@@ -25,7 +26,7 @@ concurrency:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}/memegen
-  VERSION: "1.1.0"
+  VERSION: "1.2.0"
   # Pinned jacebrowning/memegen commit (2026-06-16). Bump to track upstream.
   MEMEGEN_REF: 6e559ceda8bf43caa81072be2d9885adac693f94
 
@@ -47,9 +48,15 @@ jobs:
           ref: ${{ env.MEMEGEN_REF }}
           path: memegen-src
 
+      - name: Patch memegen for MP4 templates
+        run: |
+          git -C memegen-src apply --verbose "$GITHUB_WORKSPACE/images/memegen/patches/0001-mp4-source.patch"
+          echo "Applied MP4 source/output patch"
+
       - name: Bake in extra templates
         run: |
           cp -r images/memegen/extra-templates/. memegen-src/templates/
+          rm -f memegen-src/templates/INDEX.md
           echo "Template count: $(find memegen-src/templates -maxdepth 1 -mindepth 1 -type d | wc -l)"
 
       - name: Set up Buildx
