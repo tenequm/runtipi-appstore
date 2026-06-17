@@ -44,3 +44,7 @@ out/
 # Test coverage
 coverage/
 .nyc_output/
+
+# Python cache (from images/memegen/scripts tooling)
+__pycache__/
+*.pyc
