@@ -36,10 +36,10 @@ jobs:
 
     steps:
       - name: Checkout app store
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Checkout memegen source
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           repository: jacebrowning/memegen
           ref: ${{ env.MEMEGEN_REF }}
