@@ -1,0 +1,71 @@
+name: Moe throws Barney
+source: https://imgflip.com/meme/188789496/Moe-throws-Barney
+keywords:
+  - simpsons
+  - moe
+  - barney
+  - throwing out
+  - behind you
+  - three panels
+text:
+  - style: upper
+    color: white
+    font: thick
+    anchor_x: 0.1
+    anchor_y: 0.1
+    angle: 0.0
+    scale_x: 0.2
+    scale_y: 0.15
+    align: center
+    start: 0.0
+    stop: 1.0
+  - style: upper
+    color: white
+    font: thick
+    anchor_x: 0.4
+    anchor_y: 0.15
+    angle: 0.0
+    scale_x: 0.3
+    scale_y: 0.15
+    align: center
+    start: 0.0
+    stop: 1.0
+  - style: upper
+    color: white
+    font: thick
+    anchor_x: 0.3
+    anchor_y: 0.45
+    angle: 0.0
+    scale_x: 0.25
+    scale_y: 0.15
+    align: center
+    start: 0.0
+    stop: 1.0
+  - style: upper
+    color: white
+    font: thick
+    anchor_x: 0.05
+    anchor_y: 0.8
+    angle: 0.0
+    scale_x: 0.15
+    scale_y: 0.15
+    align: center
+    start: 0.0
+    stop: 1.0
+  - style: upper
+    color: white
+    font: thick
+    anchor_x: 0.25
+    anchor_y: 0.8
+    angle: 0.0
+    scale_x: 0.25
+    scale_y: 0.15
+    align: center
+    start: 0.0
+    stop: 1.0
+example:
+  - Me
+  - My problems
+  - Me
+  - My problems
+  - Me

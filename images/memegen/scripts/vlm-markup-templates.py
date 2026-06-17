@@ -273,6 +273,26 @@ def source_manifest(path: Path, limit: int) -> list[dict]:
     return out
 
 
+def source_staging(staging_dir: Path, limit: int) -> list[dict]:
+    """A scrape-imgflip-trending.py staging dir: <slug>/default.* + manifest.json.
+
+    Uses the LOCAL (already optimized / HD-swapped) image bytes and the real
+    template name + source URL from the manifest - never re-downloads."""
+    manifest = json.loads((staging_dir / "manifest.json").read_text())
+    out = []
+    for m in manifest[:limit]:
+        files = sorted((staging_dir / m["slug"]).glob("default.*"))
+        if not files:  # dir pruned or never downloaded
+            continue
+        out.append({
+            "name": m["name"],
+            "path": files[0],          # actual on-disk ext (optimize may have png->jpg)
+            "box_count": None,
+            "source": m.get("source", m.get("url", "")),
+        })
+    return out
+
+
 def source_dir(input_dir: Path, limit: int) -> list[dict]:
     exts = {".jpg", ".jpeg", ".png", ".gif", ".webp"}
     files = sorted(p for p in input_dir.iterdir() if p.suffix.lower() in exts)
@@ -361,8 +381,9 @@ def load_upstream(memegen_dir: Path | None) -> tuple[set[str], set[str]]:
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--source", choices=["imgflip", "manifest", "dir"], default="imgflip")
-    ap.add_argument("--input-dir", type=Path, help="blank images dir (--source dir)")
+    ap.add_argument("--source", choices=["imgflip", "manifest", "dir", "staging"], default="imgflip")
+    ap.add_argument("--input-dir", type=Path, help="blank images dir (--source dir) "
+                    "or a scrape staging dir with manifest.json (--source staging)")
     ap.add_argument("--manifest", type=Path, help="catalog JSON (--source manifest)")
     ap.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT)
     ap.add_argument("--model", default="google/gemini-3.5-flash")
@@ -386,6 +407,10 @@ def main() -> None:
         if not args.manifest:
             sys.exit("--source manifest needs --manifest")
         items = source_manifest(args.manifest, args.limit)
+    elif args.source == "staging":
+        if not args.input_dir:
+            sys.exit("--source staging needs --input-dir (the scrape staging dir)")
+        items = source_staging(args.input_dir, args.limit)
     else:
         if not args.input_dir:
             sys.exit("--source dir needs --input-dir")

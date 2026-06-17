@@ -1,6 +1,6 @@
 services:
   memegen:
-    image: ghcr.io/tenequm/runtipi-appstore/memegen:1.0.0
+    image: ghcr.io/tenequm/runtipi-appstore/memegen:1.1.0
     environment:
       - TZ=${TZ}
     volumes:
