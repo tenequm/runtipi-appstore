@@ -3,6 +3,11 @@ services:
     image: ghcr.io/tenequm/runtipi-appstore/memegen:1.1.0
     environment:
       - TZ=${TZ}
+      # Tells memegen its public hostname so generated meme URLs (and /docs) are
+      # absolute https://<host>/... instead of http://localhost:5000/... . runtipi
+      # sets APP_EXPOSED_DOMAIN when the app is exposed; memegen keys off DOMAIN
+      # presence to switch to its production https scheme.
+      - DOMAIN=${APP_EXPOSED_DOMAIN}
     volumes:
       - ${APP_DATA_DIR}/data/images:/opt/memegen/images
     healthcheck:
