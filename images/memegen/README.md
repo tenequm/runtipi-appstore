@@ -108,7 +108,48 @@ python3 scripts/sync-imgflip-templates.py --memegen-dir ... --only bell-curve,gu
 The generated geometry is a **sane default, not pixel-perfect** - multi-panel
 formats (Drake-style, bell curve, Gru's plan) often want hand-tuned `anchor_y` /
 `scale_y`. Render the template once (`/images/<id>/preview.jpg`) and nudge the
-fractions until the captions sit right.
+fractions until the captions sit right. For better multi-panel geometry without
+hand-tuning, use the VLM script below instead.
+
+### VLM markup (better multi-panel geometry)
+
+[`scripts/vlm-markup-templates.py`](scripts/vlm-markup-templates.py) does what
+the box-count heuristic can't: it shows each blank image to a vision LLM
+(Gemini Flash via OpenRouter) and gets back actual caption regions - so Drake's
+two captions land on the right half, Two Buttons' labels land on the buttons,
+Distracted Boyfriend's three labels land on the three people. It also picks
+text color (black vs white) per region and writes good name/keywords/examples.
+
+```bash
+export OPENROUTER_API_KEY=...    # already in the maintainer's env
+
+# top ~100 ranked templates from imgflip (each with a box_count hint):
+python3 scripts/vlm-markup-templates.py --source imgflip --limit 500
+
+# any folder of blank images (filename -> template name):
+python3 scripts/vlm-markup-templates.py --source dir --input-dir /path/to/blanks
+
+# an explicit 500-template catalog you sourced elsewhere (e.g. justmeme):
+#   manifest.json = [{"name":"...","url":"https://.../x.jpg","box_count":2}, ...]
+python3 scripts/vlm-markup-templates.py --source manifest --manifest manifest.json --limit 500
+
+# preview a few to a scratch dir without touching extra-templates:
+python3 scripts/vlm-markup-templates.py --source imgflip --limit 5 --output-dir /tmp/vlm-out
+```
+
+Notes:
+- Default model `google/gemini-2.5-flash` - cheap, native bounding boxes,
+  resize-robust. Swap with `--model` (e.g. `qwen/qwen3-vl-235b-a22b-instruct`
+  for higher grounding accuracy, `google/gemini-2.5-pro` for the hardest layouts).
+- Reasoning is **disabled** in the request - thinking measurably worsens
+  Gemini's box accuracy. Coordinates use the `[ymin, xmin, ymax, xmax]` 0-1000
+  convention internally.
+- It's **one-shot** markup (no render-verify loop), good for ~90% of templates;
+  a few oddball layouts (diagonal text, speech bubbles, >4 panels) still want a
+  manual nudge. Re-run with `--overwrite` to redo a template.
+- **`--source imgflip` caps at imgflip's ranked top-100.** To reach 500 you must
+  feed a `--source dir` folder or a `--source manifest` catalog of blanks - no
+  single API hands out a ranked "top 500".
 
 ## Licensing note
 
