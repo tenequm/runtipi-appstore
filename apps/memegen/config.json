@@ -1,0 +1,22 @@
+{
+  "$schema": "../app-info-schema.json",
+  "name": "Memegen",
+  "id": "memegen",
+  "available": true,
+  "short_desc": "Self-hosted meme generator with a URL API, 200+ built-in templates, and arbitrary custom backgrounds.",
+  "author": "Jace Browning",
+  "port": 5005,
+  "categories": ["media", "utilities"],
+  "description": "Memegen is a stateless meme generator: every meme is described entirely by its URL, so there is no database, no Redis, and nothing to log in to. This build bakes in all 200+ upstream templates (Drake, Distracted Boyfriend, Two Buttons, Gru's Plan, and many more) plus a curated set of extra trending formats. Beyond the built-in templates it supports fully dynamic custom backgrounds: point the `custom` endpoint at any image URL and it captions that image on the fly, e.g. `/images/custom/top_line/bottom_line.png?background=https://example.com/any-image.png`. Rendered memes are cached to a local volume. The image is multi-arch (amd64 + arm64) and built from source, since upstream publishes no public image.",
+  "tipi_version": 1,
+  "version": "1.0.0",
+  "min_tipi_version": "4.5.0",
+  "source": "https://github.com/jacebrowning/memegen",
+  "website": "https://memegen.link",
+  "exposable": true,
+  "dynamic_config": true,
+  "supported_architectures": ["arm64", "amd64"],
+  "created_at": 1750000000000,
+  "updated_at": 1750000000000,
+  "form_fields": []
+}
