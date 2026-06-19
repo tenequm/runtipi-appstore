@@ -1,6 +1,6 @@
 services:
   cloakbrowser-manager:
-    image: cloakhq/cloakbrowser-manager:v0.0.10@sha256:56d8b1230a390a047d0e9788c82f41d1c11acae6db9aa21f124c2b04343aa296
+    image: cloakhq/cloakbrowser-manager:v0.0.10
     environment:
       - AUTH_TOKEN=${CBM_AUTH_TOKEN}
       - TZ=${TZ}
