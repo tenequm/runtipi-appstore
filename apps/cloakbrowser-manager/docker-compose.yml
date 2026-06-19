@@ -1,0 +1,83 @@
+services:
+  cloakbrowser-manager:
+    image: cloakhq/cloakbrowser-manager:v0.0.10@sha256:56d8b1230a390a047d0e9788c82f41d1c11acae6db9aa21f124c2b04343aa296
+    environment:
+      - AUTH_TOKEN=${CBM_AUTH_TOKEN}
+      - TZ=${TZ}
+    volumes:
+      - ${APP_DATA_DIR}/data:/data
+    shm_size: 2gb
+    mem_limit: 3g
+    x-runtipi:
+      internal_port: 8080
+      is_main: true
+  # Idle reaper: shares the manager's netns so it sees the localhost CDP
+  # (5100-5199) and noVNC (6100-6199) sockets the manager proxies. A running
+  # profile with no established CDP/VNC connection for CBM_IDLE_MINUTES is
+  # stopped, freeing the Chromium's RAM on this low-power host. Active viewing
+  # or agent-browser driving keeps a connection open, so it never reaps a live
+  # session. Persistent profile cookies survive the stop (relaunch restores logins).
+  cloakbrowser-reaper:
+    image: python:3.12-alpine
+    network_mode: service:cloakbrowser-manager
+    depends_on:
+      - cloakbrowser-manager
+    environment:
+      - AUTH_TOKEN=${CBM_AUTH_TOKEN}
+      - REAPER_ENABLED=${CBM_REAPER_ENABLED}
+      - IDLE_MINUTES=${CBM_IDLE_MINUTES}
+      - TZ=${TZ}
+    command:
+      - python3
+      - -c
+      - |
+        import os, time, json, urllib.request
+        if (os.environ.get("REAPER_ENABLED") or "true").lower() in ("false", "0", "no", "off"):
+            print("[reaper] disabled via toggle; staying idle", flush=True)
+            while True:
+                time.sleep(3600)
+        TOKEN = os.environ["AUTH_TOKEN"]
+        IDLE = int(os.environ.get("IDLE_MINUTES") or "20") * 60
+        BASE = "http://127.0.0.1:8080"
+        def api(path, method="GET"):
+            req = urllib.request.Request(BASE + path, method=method,
+                                         headers={"Authorization": f"Bearer {TOKEN}"})
+            with urllib.request.urlopen(req, timeout=10) as r:
+                body = r.read()
+                return json.loads(body) if body else None
+        def active_conns():
+            n = 0
+            for f in ("/proc/net/tcp", "/proc/net/tcp6"):
+                try:
+                    rows = open(f).read().splitlines()[1:]
+                except OSError:
+                    continue
+                for ln in rows:
+                    p = ln.split()
+                    if len(p) < 4 or p[3] != "01":  # 01 = ESTABLISHED
+                        continue
+                    port = int(p[1].rsplit(":", 1)[1], 16)
+                    if 5100 <= port <= 5199 or 6100 <= port <= 6199:
+                        n += 1
+            return n
+        print(f"[reaper] idle-timeout={IDLE//60}min", flush=True)
+        last_active = time.time()
+        while True:
+            try:
+                profs = api("/api/profiles") or []
+                running = [p for p in profs if p.get("status") == "running"]
+                if active_conns() > 0:
+                    last_active = time.time()
+                if running and time.time() - last_active > IDLE:
+                    for p in running:
+                        try:
+                            api(f"/api/profiles/{p['id']}/stop", "POST")
+                            print(f"[reaper] stopped idle profile {p['id']}", flush=True)
+                        except Exception as e:
+                            print(f"[reaper] stop failed {p['id']}: {e}", flush=True)
+                    last_active = time.time()
+            except Exception as e:
+                print(f"[reaper] error: {e}", flush=True)
+            time.sleep(60)
+x-runtipi:
+  schema_version: 2

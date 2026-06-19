@@ -1,0 +1,46 @@
+{
+  "$schema": "../app-info-schema.json",
+  "name": "CloakBrowser Manager",
+  "id": "cloakbrowser-manager",
+  "available": true,
+  "short_desc": "Self-hosted stealth-browser profile manager (Multilogin alternative). Persistent CloakBrowser profiles with unique fingerprints, viewed via noVNC and drivable over CDP.",
+  "author": "tenequm",
+  "port": 8080,
+  "categories": ["utilities"],
+  "description": "CloakBrowser Manager runs isolated CloakBrowser (stealth Chromium) profiles, each with its own fingerprint, cookies, and session data that persist across restarts. Log into a site once via the in-browser noVNC viewer; every running profile also exposes a Chrome DevTools Protocol endpoint so external tools (Playwright, Puppeteer, agent-browser) can drive it while you watch live. Used here to keep warm, logged-in browser sessions off the local Mac: the browser egresses via this machine's home IP (consistent location = fewer 2FA challenges) and is reached over the tailnet. Holds live account sessions, so AUTH_TOKEN is required and the app is NOT exposed on the public domain - tailnet-only.",
+  "tipi_version": 1,
+  "version": "0.0.10",
+  "min_tipi_version": "4.5.0",
+  "source": "https://github.com/CloakHQ/CloakBrowser-Manager",
+  "website": "https://cloakbrowser.dev",
+  "exposable": false,
+  "dynamic_config": true,
+  "supported_architectures": ["amd64"],
+  "created_at": 1781913600000,
+  "updated_at": 1781913600000,
+  "form_fields": [
+    {
+      "type": "password",
+      "label": "Auth Token",
+      "hint": "Bearer token protecting the web UI and API. This app holds live logged-in sessions to your accounts - set a strong value and keep it tailnet-only.",
+      "required": true,
+      "env_variable": "CBM_AUTH_TOKEN"
+    },
+    {
+      "type": "boolean",
+      "label": "Auto-stop idle browsers",
+      "hint": "When on, a running profile with no active noVNC view or CDP connection for the idle timeout is stopped to free RAM (logins persist via saved cookies). Turn off to keep launched profiles running until you stop them manually.",
+      "required": false,
+      "default": true,
+      "env_variable": "CBM_REAPER_ENABLED"
+    },
+    {
+      "type": "text",
+      "label": "Idle Timeout (minutes)",
+      "placeholder": "20",
+      "hint": "Used only when auto-stop is on: minutes of no noVNC/CDP activity before a profile is stopped. Defaults to 20.",
+      "required": false,
+      "env_variable": "CBM_IDLE_MINUTES"
+    }
+  ]
+}
