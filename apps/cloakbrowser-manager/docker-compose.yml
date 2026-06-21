@@ -8,7 +8,7 @@ services:
     volumes:
       - ${APP_DATA_DIR}/data:/data
     shm_size: 2gb
-    mem_limit: 3g
+    mem_limit: 6g
     x-runtipi:
       internal_port: 8080
       is_main: true
