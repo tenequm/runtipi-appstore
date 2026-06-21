@@ -8,7 +8,7 @@
   "port": 8080,
   "categories": ["utilities"],
   "description": "CloakBrowser Manager runs isolated CloakBrowser (stealth Chromium) profiles, each with its own fingerprint, cookies, and session data that persist across restarts. Log into a site once via the in-browser noVNC viewer; every running profile also exposes a Chrome DevTools Protocol endpoint so external tools (Playwright, Puppeteer, agent-browser) can drive it while you watch live. Used here to keep warm, logged-in browser sessions off the local Mac: the browser egresses via this machine's home IP (consistent location = fewer 2FA challenges) and is reached over the tailnet. Holds live account sessions, so AUTH_TOKEN is required and the app is NOT exposed on the public domain - tailnet-only.",
-  "tipi_version": 1,
+  "tipi_version": 2,
   "version": "0.0.10",
   "min_tipi_version": "4.5.0",
   "source": "https://github.com/CloakHQ/CloakBrowser-Manager",

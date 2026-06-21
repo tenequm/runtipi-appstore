@@ -1,6 +1,7 @@
 services:
   cloakbrowser-manager:
     image: cloakhq/cloakbrowser-manager:v0.0.10
+    init: true
     environment:
       - AUTH_TOKEN=${CBM_AUTH_TOKEN}
       - TZ=${TZ}
