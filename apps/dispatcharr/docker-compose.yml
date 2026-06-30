@@ -19,6 +19,12 @@ services:
     x-runtipi:
       internal_port: 9191
       is_main: true
+  dispatcharr-init:
+    image: alpine:3.20
+    command: ["sh", "-c", "[ -d /data/db ] && chmod 700 /data/db || true"]
+    volumes:
+      - ${APP_DATA_DIR}/data:/data
+    restart: "no"
   dispatcharr:
     image: ghcr.io/dispatcharr/dispatcharr:0.27.1
     volumes:
@@ -36,6 +42,8 @@ services:
     depends_on:
       gluetun:
         condition: service_healthy
+      dispatcharr-init:
+        condition: service_completed_successfully
     network_mode: service:gluetun
 x-runtipi:
   schema_version: 2

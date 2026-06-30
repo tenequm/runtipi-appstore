@@ -8,7 +8,7 @@
   "port": 9191,
   "categories": ["media", "utilities"],
   "description": "Dispatcharr is the *arr-family IPTV cousin: it ingests M3U playlists or Xtream Codes accounts, filters and organises channels, auto-matches EPG, and re-serves everything to Jellyfin/Plex/Emby as a stable HDHomeRun/M3U/XMLTV source. Its proxy engine multiplexes a single upstream connection to many local viewers (respecting provider connection limits) and adds buffering for stream stability. This deployment forces all provider traffic through a WireGuard gateway (gluetun in custom mode) with a hard kill-switch, so the IPTV provider sees the gateway IP and the local ISP cannot see or block the streams. IPTV is pull-only, so no inbound port forwarding is required. Optional /dev/dri passthrough enables Intel QuickSync (VA-API) hardware transcoding for output profiles and DVR.",
-  "tipi_version": 2,
+  "tipi_version": 3,
   "version": "0.27.1",
   "min_tipi_version": "4.5.0",
   "source": "https://github.com/Dispatcharr/Dispatcharr",
