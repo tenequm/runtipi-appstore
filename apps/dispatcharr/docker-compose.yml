@@ -27,6 +27,7 @@ services:
     restart: "no"
   dispatcharr:
     image: ghcr.io/dispatcharr/dispatcharr:0.27.1
+    shm_size: "256m"
     volumes:
       - ${APP_DATA_DIR}/data:/data
     environment:
