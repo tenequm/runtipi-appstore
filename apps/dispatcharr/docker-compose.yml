@@ -20,7 +20,7 @@ services:
       internal_port: 9191
       is_main: true
   dispatcharr:
-    image: ghcr.io/dispatcharr/dispatcharr:0.26.0
+    image: ghcr.io/dispatcharr/dispatcharr:0.27.1
     volumes:
       - ${APP_DATA_DIR}/data:/data
     environment:
