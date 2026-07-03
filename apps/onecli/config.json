@@ -1,0 +1,73 @@
+{
+  "$schema": "../app-info-schema.json",
+  "name": "OneCLI",
+  "id": "onecli",
+  "available": true,
+  "short_desc": "Open-source credential gateway with a built-in vault. Give your AI agents access to services without exposing keys.",
+  "author": "onecli",
+  "port": 10254,
+  "categories": ["ai", "security"],
+  "description": "OneCLI is an open-source gateway that sits between your AI agents and the services they call. Store credentials once in OneCLI's AES-256-GCM encrypted vault and the gateway injects them transparently at request time - agents make normal HTTP calls through the gateway proxy and never see the real keys. Includes a web dashboard for managing agents, secrets, rules, and audit logs, plus a Rust HTTPS-intercepting gateway. This app bundles PostgreSQL (Community edition, single container each). Port 10254 serves the dashboard and REST API (treat as an admin interface - in single-user mode anyone who can reach it has admin access); port 10255 is the gateway proxy your agents connect to.",
+  "tipi_version": 1,
+  "version": "1.40.0",
+  "min_tipi_version": "4.5.0",
+  "source": "https://github.com/onecli/onecli",
+  "website": "https://onecli.sh",
+  "exposable": false,
+  "dynamic_config": true,
+  "supported_architectures": ["arm64", "amd64"],
+  "created_at": 1750000000000,
+  "updated_at": 1750000000000,
+  "form_fields": [
+    {
+      "type": "random",
+      "label": "PostgreSQL Password",
+      "min": 32,
+      "env_variable": "ONECLI_POSTGRES_PASSWORD"
+    },
+    {
+      "type": "password",
+      "label": "Secret Encryption Key",
+      "hint": "AES-256-GCM key (base64, 32 bytes) for the secret vault. Leave empty to auto-generate on first start (persisted in app data). Set it explicitly when migrating an existing instance.",
+      "required": false,
+      "env_variable": "ONECLI_SECRET_ENCRYPTION_KEY"
+    },
+    {
+      "type": "url",
+      "label": "App URL",
+      "placeholder": "http://192.168.1.10:10254",
+      "hint": "Public URL of the dashboard as reachable by you and OAuth providers. Used in links and as the base for OAuth callback URLs ({APP_URL}/v1/apps/{provider}/callback).",
+      "required": false,
+      "env_variable": "ONECLI_APP_URL"
+    },
+    {
+      "type": "text",
+      "label": "Gateway Base URL",
+      "placeholder": "192.168.1.10:10255",
+      "hint": "host:port agents use to reach the gateway proxy. Default (host.docker.internal:10255) only works for agent containers on the same Docker host - set your server's reachable address if agents run elsewhere.",
+      "required": false,
+      "env_variable": "ONECLI_GATEWAY_BASE_URL"
+    },
+    {
+      "type": "password",
+      "label": "NextAuth Secret",
+      "hint": "Leave empty for single-user mode (no login). Setting this (openssl rand -base64 32) switches the instance to multi-user mode with Google OAuth - the Google credentials below are then required.",
+      "required": false,
+      "env_variable": "ONECLI_NEXTAUTH_SECRET"
+    },
+    {
+      "type": "text",
+      "label": "Google OAuth Client ID",
+      "hint": "Only used in multi-user mode (when NextAuth Secret is set).",
+      "required": false,
+      "env_variable": "ONECLI_GOOGLE_CLIENT_ID"
+    },
+    {
+      "type": "password",
+      "label": "Google OAuth Client Secret",
+      "hint": "Only used in multi-user mode (when NextAuth Secret is set).",
+      "required": false,
+      "env_variable": "ONECLI_GOOGLE_CLIENT_SECRET"
+    }
+  ]
+}

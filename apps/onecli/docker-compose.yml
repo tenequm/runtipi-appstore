@@ -1,0 +1,39 @@
+services:
+  onecli:
+    image: ghcr.io/onecli/onecli:1.40.0
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "10255:10255"
+    environment:
+      - DATABASE_URL=postgresql://onecli:${ONECLI_POSTGRES_PASSWORD}@postgres:5432/onecli
+      - APP_URL=${ONECLI_APP_URL:-http://localhost:10254}
+      - NEXTAUTH_URL=${ONECLI_APP_URL:-http://localhost:10254}
+      - GATEWAY_BASE_URL=${ONECLI_GATEWAY_BASE_URL:-host.docker.internal:10255}
+      - SECRET_ENCRYPTION_KEY=${ONECLI_SECRET_ENCRYPTION_KEY:-}
+      - NEXTAUTH_SECRET=${ONECLI_NEXTAUTH_SECRET:-}
+      - GOOGLE_CLIENT_ID=${ONECLI_GOOGLE_CLIENT_ID:-}
+      - GOOGLE_CLIENT_SECRET=${ONECLI_GOOGLE_CLIENT_SECRET:-}
+      - TZ=${TZ}
+    volumes:
+      - ${APP_DATA_DIR}/data:/app/data
+    x-runtipi:
+      internal_port: 10254
+      is_main: true
+  postgres:
+    image: postgres:18-alpine
+    environment:
+      - POSTGRES_USER=onecli
+      - POSTGRES_PASSWORD=${ONECLI_POSTGRES_PASSWORD}
+      - POSTGRES_DB=onecli
+    volumes:
+      - ${APP_DATA_DIR}/postgres:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U onecli"]
+      interval: 5s
+      timeout: 3s
+      start_period: 15s
+      retries: 10
+x-runtipi:
+  schema_version: 2
