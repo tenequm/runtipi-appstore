@@ -21,8 +21,17 @@ services:
     x-runtipi:
       internal_port: 10254
       is_main: true
+  postgres-init:
+    image: alpine:3.22
+    command: ["sh", "-c", "chmod 700 /var/lib/postgresql/*/docker 2>/dev/null; true"]
+    volumes:
+      - ${APP_DATA_DIR}/postgres:/var/lib/postgresql
+    restart: "no"
   postgres:
     image: postgres:18-alpine
+    depends_on:
+      postgres-init:
+        condition: service_completed_successfully
     environment:
       - POSTGRES_USER=onecli
       - POSTGRES_PASSWORD=${ONECLI_POSTGRES_PASSWORD}
