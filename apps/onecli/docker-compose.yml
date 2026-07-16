@@ -1,6 +1,7 @@
 services:
   onecli:
-    image: ghcr.io/onecli/onecli:1.40.0
+    image: ghcr.io/onecli/onecli:1.41.0
+    init: true
     depends_on:
       postgres:
         condition: service_healthy
