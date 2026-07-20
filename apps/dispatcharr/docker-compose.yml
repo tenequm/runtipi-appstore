@@ -20,7 +20,7 @@ services:
       internal_port: 9191
       is_main: true
   dispatcharr:
-    image: ghcr.io/dispatcharr/dispatcharr:0.27.1
+    image: ghcr.io/dispatcharr/dispatcharr:0.28.1
     shm_size: "256m"
     entrypoint: ["/bin/sh", "-c", "chmod 700 /data/db 2>/dev/null || true; exec /app/docker/entrypoint.sh"]
     volumes:
