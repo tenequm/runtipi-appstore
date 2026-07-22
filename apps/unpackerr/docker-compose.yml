@@ -1,6 +1,6 @@
 services:
   unpackerr:
-    image: ghcr.io/hotio/unpackerr:release-0.14.5
+    image: ghcr.io/hotio/unpackerr:release-0.15.2
     volumes:
       - ${APP_DATA_DIR}/data:/config
       - ${ROOT_FOLDER_HOST}/media:/media
