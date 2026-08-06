@@ -1,0 +1,23 @@
+services:
+  cleanuparr:
+    image: ghcr.io/cleanuparr/cleanuparr:2.10.3
+    volumes:
+      - ${APP_DATA_DIR}/data:/config
+      - ${ROOT_FOLDER_HOST}/media:/media
+    environment:
+      - PORT=11011
+      - PUID=1000
+      - PGID=1000
+      - UMASK=002
+      - TZ=${TZ}
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:11011/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    x-runtipi:
+      internal_port: 11011
+      is_main: true
+x-runtipi:
+  schema_version: 2

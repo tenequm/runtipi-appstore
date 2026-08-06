@@ -1,0 +1,22 @@
+{
+  "$schema": "../app-info-schema.json",
+  "name": "Cleanuparr",
+  "id": "cleanuparr",
+  "available": true,
+  "short_desc": "Removes stalled, failed-import and orphaned downloads from the *arr queues and retriggers searches",
+  "author": "Cleanuparr",
+  "port": 11011,
+  "categories": ["media", "automation"],
+  "description": "Cleanuparr is a download manager for the Servarr ecosystem. It strikes and removes downloads that are stalled, stuck in metadata, failing to import, or unreasonably slow, then triggers a replacement search in Sonarr/Radarr so the queue never silently blocks new grabs. It also blocks known-malicious files, cleans up torrents past a seeding threshold, and finds orphaned files that no *arr references and no torrent claims. Configured entirely through its own web UI; point it at Sonarr, Radarr and Transmission after install.",
+  "tipi_version": 1,
+  "version": "2.10.3",
+  "min_tipi_version": "4.5.0",
+  "source": "https://github.com/Cleanuparr/Cleanuparr",
+  "website": "https://cleanuparr.github.io/Cleanuparr/",
+  "exposable": true,
+  "dynamic_config": false,
+  "supported_architectures": ["arm64", "amd64"],
+  "created_at": 1754400000000,
+  "updated_at": 1754400000000,
+  "form_fields": []
+}
