@@ -1,5 +1,5 @@
 services:
-  gluetun:
+  dispatcharr-gluetun:
     image: qmcgaw/gluetun:v3.40
     environment:
       - VPN_SERVICE_PROVIDER=custom
@@ -36,8 +36,8 @@ services:
     group_add:
       - "993"
     depends_on:
-      gluetun:
+      dispatcharr-gluetun:
         condition: service_healthy
-    network_mode: service:gluetun
+    network_mode: service:dispatcharr-gluetun
 x-runtipi:
   schema_version: 2

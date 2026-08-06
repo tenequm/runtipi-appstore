@@ -8,7 +8,7 @@
   "port": 9091,
   "categories": ["media", "utilities"],
   "description": "Transmission BitTorrent client whose traffic is forced through a self-hosted WireGuard VPN gateway (gluetun in custom mode). The gluetun container holds the network namespace and enforces a hard kill-switch: if the tunnel drops, no traffic leaks. Inbound peer connections arrive via a port forwarded on the gateway, giving Transmission a real open port (good download speed and seeding ratio) while egress exits through the gateway IP. Designed to pair with a WireGuard gateway that forwards the peer port back over the tunnel.",
-  "tipi_version": 1,
+  "tipi_version": 2,
   "version": "4.1.2",
   "min_tipi_version": "4.5.0",
   "source": "https://github.com/transmission/transmission",

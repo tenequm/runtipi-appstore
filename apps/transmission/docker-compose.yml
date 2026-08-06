@@ -1,5 +1,5 @@
 services:
-  gluetun:
+  transmission-gluetun:
     image: qmcgaw/gluetun:v3.40
     environment:
       - VPN_SERVICE_PROVIDER=custom
@@ -30,8 +30,8 @@ services:
       - PGID=1000
       - TZ=${TZ}
     depends_on:
-      gluetun:
+      transmission-gluetun:
         condition: service_healthy
-    network_mode: service:gluetun
+    network_mode: service:transmission-gluetun
 x-runtipi:
   schema_version: 2
