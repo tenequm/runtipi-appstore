@@ -1,7 +1,6 @@
 services:
   onecli:
-    image: ghcr.io/onecli/onecli:1.41.0
-    init: true
+    image: ghcr.io/onecli/onecli:1.45.0
     depends_on:
       postgres:
         condition: service_healthy
@@ -12,6 +11,9 @@ services:
       - APP_URL=${ONECLI_APP_URL:-http://localhost:10254}
       - NEXTAUTH_URL=${ONECLI_APP_URL:-http://localhost:10254}
       - GATEWAY_BASE_URL=${ONECLI_GATEWAY_BASE_URL:-host.docker.internal:10255}
+      # Gateway -> Node API is a loopback call inside this container. Pin it, or the
+      # gateway falls back to APP_URL and sends internal vault calls out over the network.
+      - INTERNAL_API_URL=http://localhost:10254
       - SECRET_ENCRYPTION_KEY=${ONECLI_SECRET_ENCRYPTION_KEY:-}
       - NEXTAUTH_SECRET=${ONECLI_NEXTAUTH_SECRET:-}
       - GOOGLE_CLIENT_ID=${ONECLI_GOOGLE_CLIENT_ID:-}
