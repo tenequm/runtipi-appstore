@@ -1,0 +1,23 @@
+services:
+  shelfarr:
+    image: ghcr.io/pedro-revez-silva/shelfarr:2026.08.09.1
+    environment:
+      - SOLID_QUEUE_IN_PUMA=1
+      - PUID=1000
+      - PGID=1000
+      - CHOWN_ON_START=auto
+      - TZ=${TZ}
+    volumes:
+      - ${APP_DATA_DIR}/data/storage:/rails/storage
+      - ${ROOT_FOLDER_HOST}/media:/media
+    healthcheck:
+      test: curl -f http://localhost:80/up || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    x-runtipi:
+      internal_port: 80
+      is_main: true
+x-runtipi:
+  schema_version: 2
