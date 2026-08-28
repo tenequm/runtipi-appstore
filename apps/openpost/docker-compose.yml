@@ -1,6 +1,10 @@
 services:
   openpost:
-    image: ghcr.io/getopenpost/openpost:v4.7.0
+    # Fork with the external analytics ingest API (tenequm/openpost, branch
+    # feat/analytics-ingest); image built locally and docker-loaded onto bl -
+    # not pullable from ghcr. Revert to ghcr.io/getopenpost/openpost once upstream
+    # ships the feature.
+    image: ghcr.io/tenequm/openpost:v4.7.0-ingest.1
     # The image mkdirs /data/db at build time, but the bind mount masks it and the
     # SQLite driver opens the DSN without creating parent dirs - so create them here.
     entrypoint: ["/bin/sh", "-c", "mkdir -p /data/db /data/media; exec /app/openpost"]
@@ -15,6 +19,7 @@ services:
       - OPENPOST_JWT_SECRET=${OPENPOST_JWT_SECRET}
       - OPENPOST_ENCRYPTION_KEY=${OPENPOST_ENCRYPTION_KEY}
       - OPENPOST_DISABLE_REGISTRATIONS=${OPENPOST_DISABLE_REGISTRATIONS:-false}
+      - OPENPOST_ANALYTICS_EXTERNAL_PLATFORMS=${OPENPOST_ANALYTICS_EXTERNAL_PLATFORMS:-}
       - TZ=${TZ}
     volumes:
       - ${APP_DATA_DIR}/data:/data
