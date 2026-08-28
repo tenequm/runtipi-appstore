@@ -1,9 +1,8 @@
 services:
   openpost:
-    # Fork with the external analytics ingest API (tenequm/openpost, branch
-    # feat/analytics-ingest); image built locally and docker-loaded onto bl -
-    # not pullable from ghcr. Revert to ghcr.io/getopenpost/openpost once upstream
-    # ships the feature.
+    # Fork with Zernio-backed X/LinkedIn adapters (tenequm/openpost, branch
+    # feat/zernio-adapters); image pushed to ghcr from this Mac. Test rig with an
+    # expiry: retire once gopost publishes through Zernio.
     image: ghcr.io/tenequm/openpost:v4.7.0-zernio.1
     # The image mkdirs /data/db at build time, but the bind mount masks it and the
     # SQLite driver opens the DSN without creating parent dirs - so create them here.
@@ -21,6 +20,7 @@ services:
       - OPENPOST_DISABLE_REGISTRATIONS=${OPENPOST_DISABLE_REGISTRATIONS:-false}
       - OPENPOST_ZERNIO_API_KEY=${OPENPOST_ZERNIO_API_KEY:-}
       - OPENPOST_ZERNIO_BACKENDS=${OPENPOST_ZERNIO_BACKENDS:-}
+      - OPENPOST_ZERNIO_X_PREMIUM=true
       - TZ=${TZ}
     volumes:
       - ${APP_DATA_DIR}/data:/data
