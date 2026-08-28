@@ -11,8 +11,8 @@
     "automation"
   ],
   "description": "OpenPost is an open-source social publishing workspace for founders, creators, teams and agencies. Compose a post once, shape a per-channel variant of it, schedule it, and see in Activity what actually shipped and what failed. Connects X, LinkedIn, Threads, Instagram, Facebook, TikTok, YouTube, Bluesky and Mastodon through their official APIs, with a media library, an optional image editor, and per-workspace member roles. This app runs the selfhost edition: a single Go binary with an embedded frontend, SQLite on disk and local media storage - no external database or object store needed. Provider OAuth apps (client id and secret per platform) are configured in the UI under Settings > Instance > Configuration, not through environment variables. Set App URL to the exact public HTTPS URL you serve OpenPost from before you connect the first account: OAuth callback URLs, WebAuthn passkey RPID, CORS and the public media URL are all derived from it, and changing it later invalidates every provider callback you have already registered. The published image is amd64 only.",
-  "tipi_version": 4,
-  "version": "4.7.0-ingest.2",
+  "tipi_version": 5,
+  "version": "4.7.0-zernio.1",
   "min_tipi_version": "4.5.0",
   "source": "https://github.com/getopenpost/openpost",
   "website": "https://openpost.social",
@@ -22,7 +22,7 @@
     "amd64"
   ],
   "created_at": 1750000000000,
-  "updated_at": 1787931174234,
+  "updated_at": 1787954747456,
   "form_fields": [
     {
       "type": "url",
@@ -57,11 +57,18 @@
       "required": false
     },
     {
-      "type": "text",
-      "label": "External analytics platforms",
-      "hint": "Comma-separated platform keys (e.g. linkedin) whose analytics are pushed by an external collector via POST /api/v1/analytics/ingest; the built-in analytics sweep leaves them alone. Leave empty to disable. Fork feature (tenequm/openpost).",
+      "type": "password",
+      "label": "Zernio API key",
+      "hint": "Enables Zernio-backed publishing for the platforms listed below. Fork feature (tenequm/openpost).",
       "required": false,
-      "env_variable": "OPENPOST_ANALYTICS_EXTERNAL_PLATFORMS"
+      "env_variable": "OPENPOST_ZERNIO_API_KEY"
+    },
+    {
+      "type": "text",
+      "label": "Zernio-backed platforms",
+      "hint": "Comma-separated: linkedin,x",
+      "required": false,
+      "env_variable": "OPENPOST_ZERNIO_BACKENDS"
     }
   ]
 }
