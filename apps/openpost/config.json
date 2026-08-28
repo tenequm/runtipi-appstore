@@ -1,0 +1,60 @@
+{
+  "$schema": "../app-info-schema.json",
+  "name": "OpenPost",
+  "id": "openpost",
+  "available": true,
+  "short_desc": "Self-hosted social publishing workspace - write once, adapt per channel, schedule and track what shipped across X, LinkedIn, Threads, Bluesky, Mastodon and more.",
+  "author": "getopenpost",
+  "port": 8085,
+  "categories": [
+    "social",
+    "automation"
+  ],
+  "description": "OpenPost is an open-source social publishing workspace for founders, creators, teams and agencies. Compose a post once, shape a per-channel variant of it, schedule it, and see in Activity what actually shipped and what failed. Connects X, LinkedIn, Threads, Instagram, Facebook, TikTok, YouTube, Bluesky and Mastodon through their official APIs, with a media library, an optional image editor, and per-workspace member roles. This app runs the selfhost edition: a single Go binary with an embedded frontend, SQLite on disk and local media storage - no external database or object store needed. Provider OAuth apps (client id and secret per platform) are configured in the UI under Settings > Instance > Configuration, not through environment variables. Set App URL to the exact public HTTPS URL you serve OpenPost from before you connect the first account: OAuth callback URLs, WebAuthn passkey RPID, CORS and the public media URL are all derived from it, and changing it later invalidates every provider callback you have already registered. The published image is amd64 only.",
+  "tipi_version": 1,
+  "version": "4.7.0",
+  "min_tipi_version": "4.5.0",
+  "source": "https://github.com/getopenpost/openpost",
+  "website": "https://openpost.social",
+  "exposable": true,
+  "dynamic_config": true,
+  "supported_architectures": [
+    "amd64"
+  ],
+  "created_at": 1750000000000,
+  "updated_at": 1750000000000,
+  "form_fields": [
+    {
+      "type": "url",
+      "label": "App URL",
+      "placeholder": "https://openpost.example.com",
+      "hint": "Public HTTPS URL you serve OpenPost from. OAuth callbacks, WebAuthn RPID, CORS and media URLs are all derived from it - set it before connecting any social account, and do not change it afterwards.",
+      "required": true,
+      "env_variable": "OPENPOST_APP_URL"
+    },
+    {
+      "type": "random",
+      "label": "JWT Secret",
+      "min": 48,
+      "hint": "Signs session tokens. Generated once and persisted; changing it logs everyone out.",
+      "env_variable": "OPENPOST_JWT_SECRET",
+      "required": false
+    },
+    {
+      "type": "random",
+      "label": "Token Encryption Key",
+      "min": 48,
+      "hint": "Encrypts stored provider OAuth tokens (AES-256-GCM). Generated once and persisted - if it changes, every connected account must be reconnected. Back it up.",
+      "env_variable": "OPENPOST_ENCRYPTION_KEY",
+      "required": false
+    },
+    {
+      "type": "boolean",
+      "label": "Disable self-service registrations",
+      "default": false,
+      "hint": "Leave off for the first boot - the first account created becomes the instance admin. Turn on afterwards to close signups on a publicly exposed instance.",
+      "env_variable": "OPENPOST_DISABLE_REGISTRATIONS",
+      "required": false
+    }
+  ]
+}

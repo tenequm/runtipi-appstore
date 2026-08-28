@@ -1,0 +1,32 @@
+services:
+  openpost:
+    image: ghcr.io/getopenpost/openpost:v4.7.0
+    # The image mkdirs /data/db at build time, but the bind mount masks it and the
+    # SQLite driver opens the DSN without creating parent dirs - so create them here.
+    entrypoint: ["/bin/sh", "-c", "mkdir -p /data/db /data/media; exec /app/openpost"]
+    environment:
+      - OPENPOST_PORT=8080
+      - OPENPOST_EDITION=selfhost
+      - OPENPOST_DATABASE_DRIVER=sqlite
+      - OPENPOST_DATABASE_PATH=/data/db/openpost.db
+      - OPENPOST_STORAGE_DRIVER=local
+      - OPENPOST_MEDIA_PATH=/data/media
+      - OPENPOST_APP_URL=${OPENPOST_APP_URL}
+      - OPENPOST_JWT_SECRET=${OPENPOST_JWT_SECRET}
+      - OPENPOST_ENCRYPTION_KEY=${OPENPOST_ENCRYPTION_KEY}
+      - OPENPOST_DISABLE_REGISTRATIONS=${OPENPOST_DISABLE_REGISTRATIONS:-false}
+      - TZ=${TZ}
+    volumes:
+      - ${APP_DATA_DIR}/data:/data
+    # Process liveness only - readiness is /api/v1/ready.
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/api/v1/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+    x-runtipi:
+      internal_port: 8080
+      is_main: true
+x-runtipi:
+  schema_version: 2
