@@ -1,0 +1,67 @@
+{
+  "$schema": "../app-info-schema.json",
+  "name": "gopost",
+  "id": "gopost",
+  "available": true,
+  "short_desc": "Publish and schedule posts through pluggable adapters, pull replies and comments into one inbox, collect analytics. REST API only.",
+  "author": "tenequm",
+  "port": 8086,
+  "categories": [
+    "social",
+    "automation"
+  ],
+  "description": "gopost is a single-operator publishing service driven over a REST API with an OpenAPI document: schedule posts to X, LinkedIn and Reddit through Zernio, discover existing content (including Hacker News), pull comments, replies, mentions and DMs into one inbox, and keep metrics over time. One static Go binary, one SQLite file and one media directory under /data. No web UI: agents and scripts call the API with the bearer token. Set Public URL to the exact HTTPS URL this app is served from; media URLs handed to providers are derived from it. The image is amd64 only.",
+  "tipi_version": 1,
+  "version": "0.1.0",
+  "min_tipi_version": "4.5.0",
+  "source": "https://github.com/tenequm/gopost",
+  "exposable": true,
+  "dynamic_config": true,
+  "supported_architectures": [
+    "amd64"
+  ],
+  "created_at": 1787972000000,
+  "updated_at": 1787972000000,
+  "form_fields": [
+    {
+      "type": "url",
+      "label": "Public URL",
+      "placeholder": "https://gopost.example.com",
+      "hint": "Public HTTPS URL this app is served from. Signed media URLs handed to providers are derived from it.",
+      "required": true,
+      "env_variable": "GOPOST_PUBLIC_URL"
+    },
+    {
+      "type": "random",
+      "label": "API token",
+      "min": 48,
+      "hint": "Bearer token every API call must carry. Generated once and persisted.",
+      "env_variable": "GOPOST_TOKEN",
+      "required": false
+    },
+    {
+      "type": "random",
+      "label": "Credential encryption key",
+      "min": 32,
+      "encoding": "base64",
+      "hint": "32 bytes, base64. Encrypts stored adapter credentials (AES-256-GCM) and signs media URLs. Generated once and persisted; if it changes, every account must be reconnected. Back it up.",
+      "env_variable": "GOPOST_ENCRYPTION_KEY",
+      "required": false
+    },
+    {
+      "type": "password",
+      "label": "Zernio API key",
+      "hint": "Shared by the zernio-x, zernio-linkedin and zernio-reddit adapters. Leave empty to run without Zernio.",
+      "required": false,
+      "env_variable": "GOPOST_ADAPTER_ZERNIO_API_KEY"
+    },
+    {
+      "type": "number",
+      "label": "Active days",
+      "default": 90,
+      "hint": "Metrics and inbox are read only for content younger than this many days (the cost knob for metered providers).",
+      "required": false,
+      "env_variable": "GOPOST_ACTIVE_DAYS"
+    }
+  ]
+}
