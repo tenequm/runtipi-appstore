@@ -2,7 +2,7 @@ services:
   gopost:
     # Built and pushed from the operator's machine with `just image <tag>`
     # (tenequm/gopost); distroless static image, amd64 only.
-    image: ghcr.io/tenequm/gopost:v0.2.0
+    image: ghcr.io/tenequm/gopost:v0.3.0
     environment:
       - GOPOST_LISTEN=:8080
       - GOPOST_DATA_DIR=/data
