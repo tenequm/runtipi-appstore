@@ -2,7 +2,7 @@ services:
   gopost:
     # Built and pushed from the operator's machine with `just image <tag>`
     # (tenequm/gopost); distroless static image, amd64 only.
-    image: ghcr.io/tenequm/gopost:v0.3.0
+    image: ghcr.io/tenequm/gopost:v0.4.0
     environment:
       - GOPOST_LISTEN=:8080
       - GOPOST_DATA_DIR=/data
@@ -11,6 +11,10 @@ services:
       - GOPOST_ENCRYPTION_KEY=${GOPOST_ENCRYPTION_KEY}
       - GOPOST_ADAPTER_ZERNIO_API_KEY=${GOPOST_ADAPTER_ZERNIO_API_KEY:-}
       - GOPOST_ACTIVE_DAYS=${GOPOST_ACTIVE_DAYS:-90}
+      - GOPOST_TOKEN_RO=${GOPOST_TOKEN_RO:-}
+      - GOPOST_FEEDS_INTERVAL=${GOPOST_FEEDS_INTERVAL:-15m}
+      - GOPOST_INBOX_FIRST_WINDOW=${GOPOST_INBOX_FIRST_WINDOW:-720h}
+      - GOPOST_PENDING_GIVE_UP=${GOPOST_PENDING_GIVE_UP:-24h}
       - TZ=${TZ}
     volumes:
       - ${APP_DATA_DIR}/data:/data

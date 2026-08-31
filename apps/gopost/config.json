@@ -11,8 +11,8 @@
     "automation"
   ],
   "description": "gopost is a single-operator publishing service driven over a REST API with an OpenAPI document: schedule posts to X, LinkedIn and Reddit through Zernio, discover existing content (including Hacker News), pull comments, replies, mentions and DMs into one inbox, and keep metrics over time. One static Go binary, one SQLite file and one media directory under /data. No web UI: agents and scripts call the API with the bearer token. Set Public URL to the exact HTTPS URL this app is served from; media URLs handed to providers are derived from it. The image is amd64 only.",
-  "tipi_version": 7,
-  "version": "0.3.0",
+  "tipi_version": 8,
+  "version": "0.4.0",
   "min_tipi_version": "4.5.0",
   "source": "https://github.com/tenequm/gopost",
   "exposable": true,
@@ -21,7 +21,7 @@
     "amd64"
   ],
   "created_at": 1787972000000,
-  "updated_at": 1787972000000,
+  "updated_at": 1788203332311,
   "form_fields": [
     {
       "type": "url",
@@ -62,6 +62,38 @@
       "hint": "Metrics and inbox are read only for content younger than this many days (the cost knob for metered providers).",
       "required": false,
       "env_variable": "GOPOST_ACTIVE_DAYS"
+    },
+    {
+      "type": "random",
+      "label": "Read-only API token",
+      "min": 48,
+      "hint": "Optional second bearer that can only read: every GET works, every mutation is refused. Hand this one to agents that should not publish.",
+      "env_variable": "GOPOST_TOKEN_RO",
+      "required": false
+    },
+    {
+      "type": "text",
+      "label": "Feeds interval",
+      "placeholder": "15m",
+      "hint": "Feed pass interval (mentions and direct messages). Default 15m.",
+      "env_variable": "GOPOST_FEEDS_INTERVAL",
+      "required": false
+    },
+    {
+      "type": "text",
+      "label": "Inbox first window",
+      "placeholder": "720h",
+      "hint": "How far back a connection's first feed read looks. Default 720h (30 days).",
+      "env_variable": "GOPOST_INBOX_FIRST_WINDOW",
+      "required": false
+    },
+    {
+      "type": "text",
+      "label": "Pending metrics give-up",
+      "placeholder": "24h",
+      "hint": "How long an item whose metrics have only ever answered pending keeps being re-polled ahead of the age cadence. Default 24h.",
+      "env_variable": "GOPOST_PENDING_GIVE_UP",
+      "required": false
     }
   ]
 }
