@@ -15,7 +15,7 @@
   "version": "4.7.0-zernio.2",
   "min_tipi_version": "4.5.0",
   "source": "https://github.com/getopenpost/openpost",
-  "website": "https://openpost.social",
+  "website": "https://openpo.st",
   "exposable": true,
   "dynamic_config": true,
   "supported_architectures": [
