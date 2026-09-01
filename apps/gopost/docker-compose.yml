@@ -2,7 +2,7 @@ services:
   gopost:
     # Built and pushed from the operator's machine with `just image <tag>`
     # (tenequm/gopost); distroless static image, amd64 only.
-    image: ghcr.io/tenequm/gopost:v0.5.2
+    image: ghcr.io/tenequm/gopost:v0.5.3
     environment:
       - GOPOST_LISTEN=:8080
       - GOPOST_DATA_DIR=/data
@@ -34,7 +34,7 @@ services:
   gopost-exporter:
     # Built and pushed with `just image-exporter <tag>`; same distroless
     # pattern, never exposed - gopost reaches it on the app network.
-    image: ghcr.io/tenequm/gopost-exporter:v0.5.2
+    image: ghcr.io/tenequm/gopost-exporter:v0.5.3
     environment:
       - EXPORTER_LISTEN=:8081
       - EXPORTER_TOKEN=${GOPOST_EXPORTER_TOKEN}
