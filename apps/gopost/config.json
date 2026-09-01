@@ -11,8 +11,8 @@
     "automation"
   ],
   "description": "gopost is a single-operator publishing service driven over a REST API with an OpenAPI document: schedule posts to X, LinkedIn and Reddit through Zernio, discover existing content (including Hacker News), pull comments, replies, mentions and DMs into one inbox, and keep metrics over time. One static Go binary, one SQLite file and one media directory under /data. No web UI: agents and scripts call the API with the bearer token. Set Public URL to the exact HTTPS URL this app is served from; media URLs handed to providers are derived from it. The image is amd64 only.",
-  "tipi_version": 8,
-  "version": "0.4.0",
+  "tipi_version": 9,
+  "version": "0.5.0",
   "min_tipi_version": "4.5.0",
   "source": "https://github.com/tenequm/gopost",
   "exposable": true,
@@ -73,14 +73,6 @@
     },
     {
       "type": "text",
-      "label": "Feeds interval",
-      "placeholder": "15m",
-      "hint": "Feed pass interval (mentions and direct messages). Default 15m.",
-      "env_variable": "GOPOST_FEEDS_INTERVAL",
-      "required": false
-    },
-    {
-      "type": "text",
       "label": "Inbox first window",
       "placeholder": "720h",
       "hint": "How far back a connection's first feed read looks. Default 720h (30 days).",
@@ -94,6 +86,28 @@
       "hint": "How long an item whose metrics have only ever answered pending keeps being re-polled ahead of the age cadence. Default 24h.",
       "env_variable": "GOPOST_PENDING_GIVE_UP",
       "required": false
+    },
+    {
+      "type": "password",
+      "label": "glim API key",
+      "hint": "Feeds the gopost-exporter sidecar's glim source (X history, full bodies, public metrics). Leave empty to run without it.",
+      "required": false,
+      "env_variable": "GOPOST_GLIM_API_KEY"
+    },
+    {
+      "type": "random",
+      "label": "Exporter token",
+      "min": 48,
+      "hint": "Bearer between gopost and the gopost-exporter sidecar. Generated once and persisted.",
+      "required": false,
+      "env_variable": "GOPOST_EXPORTER_TOKEN"
+    },
+    {
+      "type": "password",
+      "label": "Zernio webhook secret",
+      "hint": "Enables POST /hooks/zernio (X-Zernio-Signature verification). Leave empty for polling only.",
+      "required": false,
+      "env_variable": "GOPOST_ADAPTER_ZERNIO_WEBHOOK_SECRET"
     }
   ]
 }
