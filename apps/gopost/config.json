@@ -11,8 +11,8 @@
     "automation"
   ],
   "description": "gopost is a single-operator publishing service driven over a REST API with an OpenAPI document: schedule posts to X, LinkedIn and Reddit through Zernio, discover existing content (including Hacker News), pull comments, replies, mentions and DMs into one inbox, and keep metrics over time. One static Go binary, one SQLite file and one media directory under /data. No web UI: agents and scripts call the API with the bearer token. Set Public URL to the exact HTTPS URL this app is served from; media URLs handed to providers are derived from it. The image is amd64 only.",
-  "tipi_version": 10,
-  "version": "0.5.1",
+  "tipi_version": 11,
+  "version": "0.5.2",
   "min_tipi_version": "4.5.0",
   "source": "https://github.com/tenequm/gopost",
   "exposable": true,
