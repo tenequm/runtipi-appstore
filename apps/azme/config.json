@@ -1,7 +1,7 @@
 {
   "$schema": "../app-info-schema.json",
-  "name": "gopost",
-  "id": "gopost",
+  "name": "azme",
+  "id": "azme",
   "available": true,
   "short_desc": "Publish and schedule posts through pluggable adapters, pull replies and comments into one inbox, collect analytics. REST API only.",
   "author": "tenequm",
@@ -10,33 +10,33 @@
     "social",
     "automation"
   ],
-  "description": "gopost is a single-operator publishing service driven over a REST API with an OpenAPI document: schedule posts to X, LinkedIn and Reddit through Zernio, discover existing content (including Hacker News), pull comments, replies, mentions and DMs into one inbox, and keep metrics over time. One static Go binary, one SQLite file and one media directory under /data. No web UI: agents and scripts call the API with the bearer token. Set Public URL to the exact HTTPS URL this app is served from; media URLs handed to providers are derived from it. The image is amd64 only.",
-  "tipi_version": 14,
+  "description": "azme is a single-operator publishing service driven over a REST API with an OpenAPI document: schedule posts to X, LinkedIn and Reddit through Zernio, discover existing content (including Hacker News), pull comments, replies, mentions and DMs into one inbox, and keep metrics over time. One static Go binary, one SQLite file and one media directory under /data. No web UI: agents and scripts call the API with the bearer token. Set Public URL to the exact HTTPS URL this app is served from; media URLs handed to providers are derived from it. The image is amd64 only.",
+  "tipi_version": 15,
   "version": "0.5.5",
   "min_tipi_version": "4.5.0",
-  "source": "https://github.com/tenequm/gopost",
+  "source": "https://github.com/tenequm/azme",
   "exposable": true,
   "dynamic_config": true,
   "supported_architectures": [
     "amd64"
   ],
   "created_at": 1787972000000,
-  "updated_at": 1788203332311,
+  "updated_at": 1788440000000,
   "form_fields": [
     {
       "type": "url",
       "label": "Public URL",
-      "placeholder": "https://gopost.example.com",
+      "placeholder": "https://azme.example.com",
       "hint": "Public HTTPS URL this app is served from. Signed media URLs handed to providers are derived from it.",
       "required": true,
-      "env_variable": "GOPOST_PUBLIC_URL"
+      "env_variable": "AZME_PUBLIC_URL"
     },
     {
       "type": "random",
       "label": "API token",
       "min": 48,
       "hint": "Bearer token every API call must carry. Generated once and persisted.",
-      "env_variable": "GOPOST_TOKEN",
+      "env_variable": "AZME_TOKEN",
       "required": false
     },
     {
@@ -45,7 +45,7 @@
       "min": 32,
       "encoding": "base64",
       "hint": "32 bytes, base64. Encrypts stored adapter credentials (AES-256-GCM) and signs media URLs. Generated once and persisted; if it changes, every account must be reconnected. Back it up.",
-      "env_variable": "GOPOST_ENCRYPTION_KEY",
+      "env_variable": "AZME_ENCRYPTION_KEY",
       "required": false
     },
     {
@@ -53,7 +53,7 @@
       "label": "Zernio API key",
       "hint": "Shared by the zernio-x, zernio-linkedin and zernio-reddit adapters. Leave empty to run without Zernio.",
       "required": false,
-      "env_variable": "GOPOST_ADAPTER_ZERNIO_API_KEY"
+      "env_variable": "AZME_ADAPTER_ZERNIO_API_KEY"
     },
     {
       "type": "number",
@@ -61,14 +61,14 @@
       "default": 90,
       "hint": "Metrics and inbox are read only for content younger than this many days (the cost knob for metered providers).",
       "required": false,
-      "env_variable": "GOPOST_ACTIVE_DAYS"
+      "env_variable": "AZME_ACTIVE_DAYS"
     },
     {
       "type": "random",
       "label": "Read-only API token",
       "min": 48,
       "hint": "Optional second bearer that can only read: every GET works, every mutation is refused. Hand this one to agents that should not publish.",
-      "env_variable": "GOPOST_TOKEN_RO",
+      "env_variable": "AZME_TOKEN_RO",
       "required": false
     },
     {
@@ -76,7 +76,7 @@
       "label": "Inbox first window",
       "placeholder": "720h",
       "hint": "How far back a connection's first feed read looks. Default 720h (30 days).",
-      "env_variable": "GOPOST_INBOX_FIRST_WINDOW",
+      "env_variable": "AZME_INBOX_FIRST_WINDOW",
       "required": false
     },
     {
@@ -84,30 +84,30 @@
       "label": "Pending metrics give-up",
       "placeholder": "24h",
       "hint": "How long an item whose metrics have only ever answered pending keeps being re-polled ahead of the age cadence. Default 24h.",
-      "env_variable": "GOPOST_PENDING_GIVE_UP",
+      "env_variable": "AZME_PENDING_GIVE_UP",
       "required": false
     },
     {
       "type": "password",
       "label": "glim API key",
-      "hint": "Feeds the gopost-exporter sidecar's glim source (X history, full bodies, public metrics). Leave empty to run without it.",
+      "hint": "Feeds the azme-exporter sidecar's glim source (X history, full bodies, public metrics). Leave empty to run without it.",
       "required": false,
-      "env_variable": "GOPOST_GLIM_API_KEY"
+      "env_variable": "AZME_GLIM_API_KEY"
     },
     {
       "type": "random",
       "label": "Exporter token",
       "min": 48,
-      "hint": "Bearer between gopost and the gopost-exporter sidecar. Generated once and persisted.",
+      "hint": "Bearer between azme and the azme-exporter sidecar. Generated once and persisted.",
       "required": false,
-      "env_variable": "GOPOST_EXPORTER_TOKEN"
+      "env_variable": "AZME_EXPORTER_TOKEN"
     },
     {
       "type": "password",
       "label": "Zernio webhook secret",
       "hint": "Enables POST /hooks/zernio (X-Zernio-Signature verification). Leave empty for polling only.",
       "required": false,
-      "env_variable": "GOPOST_ADAPTER_ZERNIO_WEBHOOK_SECRET"
+      "env_variable": "AZME_ADAPTER_ZERNIO_WEBHOOK_SECRET"
     }
   ]
 }

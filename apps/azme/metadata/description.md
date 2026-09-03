@@ -1,4 +1,4 @@
-# gopost
+# azme
 
 Publish and schedule posts to many targets through pluggable adapters, pull
 what happens around them into one inbox, and collect their analytics over

@@ -1,0 +1,54 @@
+services:
+  azme:
+    # Built and pushed from the operator's machine with `just image <tag>`
+    # (tenequm/azme); distroless static image, amd64 only.
+    image: ghcr.io/tenequm/azme:v0.5.5
+    environment:
+      - AZME_LISTEN=:8080
+      - AZME_DATA_DIR=/data
+      - AZME_PUBLIC_URL=${AZME_PUBLIC_URL}
+      - AZME_TOKEN=${AZME_TOKEN}
+      - AZME_ENCRYPTION_KEY=${AZME_ENCRYPTION_KEY}
+      - AZME_ADAPTER_ZERNIO_API_KEY=${AZME_ADAPTER_ZERNIO_API_KEY:-}
+      - AZME_ACTIVE_DAYS=${AZME_ACTIVE_DAYS:-90}
+      - AZME_TOKEN_RO=${AZME_TOKEN_RO:-}
+      - AZME_INBOX_FIRST_WINDOW=${AZME_INBOX_FIRST_WINDOW:-720h}
+      - AZME_PENDING_GIVE_UP=${AZME_PENDING_GIVE_UP:-24h}
+      - AZME_BINDINGS_FILE=/data/bindings.json
+      - AZME_ADAPTER_ZERNIO_WEBHOOK_SECRET=${AZME_ADAPTER_ZERNIO_WEBHOOK_SECRET:-}
+      - AZME_REMOTE_GLIM_URL=http://azme-exporter:8081
+      - AZME_REMOTE_GLIM_TOKEN=${AZME_EXPORTER_TOKEN}
+      - TZ=${TZ}
+    volumes:
+      - ${APP_DATA_DIR}/data:/data
+    # Distroless image: no shell, no wget. The binary probes itself.
+    healthcheck:
+      test: ["CMD", "/azme", "--health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+    x-runtipi:
+      internal_port: 8080
+      is_main: true
+  azme-exporter:
+    # Built and pushed with `just image-exporter <tag>`; same distroless
+    # pattern, never exposed - azme reaches it on the app network.
+    image: ghcr.io/tenequm/azme-exporter:v0.5.5
+    environment:
+      - EXPORTER_LISTEN=:8081
+      - EXPORTER_TOKEN=${AZME_EXPORTER_TOKEN}
+      - EXPORTER_GLIM_API_KEY=${AZME_GLIM_API_KEY:-}
+      - EXPORTER_CACHE_DIR=/cache
+      - EXPORTER_ACTIVE_DAYS=${AZME_EXPORTER_ACTIVE_DAYS:-30}
+      - TZ=${TZ}
+    volumes:
+      - ${APP_DATA_DIR}/exporter-cache:/cache
+    healthcheck:
+      test: ["CMD", "/azme-exporter", "--health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+x-runtipi:
+  schema_version: 2
