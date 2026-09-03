@@ -36,11 +36,11 @@ services:
     # pattern, never exposed - azme reaches it on the app network.
     image: ghcr.io/tenequm/azme-exporter:v0.5.5
     environment:
-      - EXPORTER_LISTEN=:8081
-      - EXPORTER_TOKEN=${AZME_EXPORTER_TOKEN}
-      - EXPORTER_GLIM_API_KEY=${AZME_GLIM_API_KEY:-}
-      - EXPORTER_CACHE_DIR=/cache
-      - EXPORTER_ACTIVE_DAYS=${AZME_EXPORTER_ACTIVE_DAYS:-30}
+      - AZME_EXPORTER_LISTEN=:8081
+      - AZME_EXPORTER_TOKEN=${AZME_EXPORTER_TOKEN}
+      - AZME_EXPORTER_GLIM_API_KEY=${AZME_GLIM_API_KEY:-}
+      - AZME_EXPORTER_CACHE_DIR=/cache
+      - AZME_EXPORTER_ACTIVE_DAYS=${AZME_EXPORTER_ACTIVE_DAYS:-30}
       - TZ=${TZ}
     volumes:
       - ${APP_DATA_DIR}/exporter-cache:/cache
