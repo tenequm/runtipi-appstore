@@ -11,8 +11,8 @@
     "automation"
   ],
   "description": "azme is a single-operator publishing service driven over a REST API with an OpenAPI document: schedule posts to X, LinkedIn and Reddit through Zernio, discover existing content (including Hacker News), pull comments, replies, mentions and DMs into one inbox, and keep metrics over time. One static Go binary, one SQLite file and one media directory under /data. No web UI: agents and scripts call the API with the bearer token. Set Public URL to the exact HTTPS URL this app is served from; media URLs handed to providers are derived from it. The image is amd64 only.",
-  "tipi_version": 16,
-  "version": "0.5.5",
+  "tipi_version": 17,
+  "version": "0.6.0",
   "min_tipi_version": "4.5.0",
   "source": "https://github.com/tenequm/azme",
   "exposable": true,
@@ -72,6 +72,14 @@
       "required": false
     },
     {
+      "type": "random",
+      "label": "Content API token",
+      "min": 48,
+      "hint": "Optional third bearer limited to public content: it reads threads and public posts but never a DM, a private channel or any message body. Hand this one to agents that should not see private conversations.",
+      "env_variable": "AZME_TOKEN_CONTENT",
+      "required": false
+    },
+    {
       "type": "text",
       "label": "Inbox first window",
       "placeholder": "720h",
@@ -108,6 +116,30 @@
       "hint": "Enables POST /hooks/zernio (X-Zernio-Signature verification). Leave empty for polling only.",
       "required": false,
       "env_variable": "AZME_ADAPTER_ZERNIO_WEBHOOK_SECRET"
+    },
+    {
+      "type": "text",
+      "label": "Conversations interval",
+      "placeholder": "6h",
+      "hint": "How often the conversation lister re-lists a connection's conversations. Default 6h.",
+      "env_variable": "AZME_INTERVAL_CONVERSATIONS",
+      "required": false
+    },
+    {
+      "type": "number",
+      "label": "History conversations per pass",
+      "default": 3,
+      "hint": "How many conversations the backfill reader advances on each pass. Default 3.",
+      "env_variable": "AZME_HISTORY_CONVERSATIONS_PER_PASS",
+      "required": false
+    },
+    {
+      "type": "text",
+      "label": "Backfill horizon",
+      "placeholder": "2024-01-01",
+      "hint": "Deployment-wide date a new connection backfills to. Empty means no backfill until you set one per connection. Unlike the API, this does not accept \"all\".",
+      "env_variable": "AZME_BACKFILL_TO",
+      "required": false
     }
   ]
 }

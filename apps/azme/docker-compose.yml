@@ -2,7 +2,7 @@ services:
   azme:
     # Built and pushed from the operator's machine with `just image <tag>`
     # (tenequm/azme); distroless static image, amd64 only.
-    image: ghcr.io/tenequm/azme:v0.5.5
+    image: ghcr.io/tenequm/azme:v0.6.0
     environment:
       - AZME_LISTEN=:8080
       - AZME_DATA_DIR=/data
@@ -12,8 +12,12 @@ services:
       - AZME_ADAPTER_ZERNIO_API_KEY=${AZME_ADAPTER_ZERNIO_API_KEY:-}
       - AZME_ACTIVE_DAYS=${AZME_ACTIVE_DAYS:-90}
       - AZME_TOKEN_RO=${AZME_TOKEN_RO:-}
+      - AZME_TOKEN_CONTENT=${AZME_TOKEN_CONTENT:-}
       - AZME_INBOX_FIRST_WINDOW=${AZME_INBOX_FIRST_WINDOW:-720h}
       - AZME_PENDING_GIVE_UP=${AZME_PENDING_GIVE_UP:-24h}
+      - AZME_INTERVAL_CONVERSATIONS=${AZME_INTERVAL_CONVERSATIONS:-6h}
+      - AZME_HISTORY_CONVERSATIONS_PER_PASS=${AZME_HISTORY_CONVERSATIONS_PER_PASS:-3}
+      - AZME_BACKFILL_TO=${AZME_BACKFILL_TO:-}
       - AZME_BINDINGS_FILE=/data/bindings.json
       - AZME_ADAPTER_ZERNIO_WEBHOOK_SECRET=${AZME_ADAPTER_ZERNIO_WEBHOOK_SECRET:-}
       - AZME_REMOTE_GLIM_URL=http://azme-exporter:8081
@@ -34,7 +38,7 @@ services:
   azme-exporter:
     # Built and pushed with `just image-exporter <tag>`; same distroless
     # pattern, never exposed - azme reaches it on the app network.
-    image: ghcr.io/tenequm/azme-exporter:v0.5.5
+    image: ghcr.io/tenequm/azme-exporter:v0.6.0
     environment:
       - AZME_EXPORTER_LISTEN=:8081
       - AZME_EXPORTER_TOKEN=${AZME_EXPORTER_TOKEN}
