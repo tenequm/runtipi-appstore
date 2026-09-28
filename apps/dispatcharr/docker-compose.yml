@@ -1,6 +1,6 @@
 services:
   dispatcharr-gluetun:
-    image: qmcgaw/gluetun:v3.40
+    image: qmcgaw/gluetun:v3.41.3
     environment:
       - VPN_SERVICE_PROVIDER=custom
       - VPN_TYPE=wireguard
@@ -20,7 +20,7 @@ services:
       internal_port: 9191
       is_main: true
   dispatcharr:
-    image: ghcr.io/dispatcharr/dispatcharr:0.28.1
+    image: ghcr.io/dispatcharr/dispatcharr:0.31.0
     shm_size: "256m"
     entrypoint: ["/bin/sh", "-c", "chmod 700 /data/db 2>/dev/null || true; exec /app/docker/entrypoint.sh"]
     volumes:
