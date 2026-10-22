@@ -21,7 +21,7 @@ services:
       internal_port: 9091
       is_main: true
   transmission:
-    image: lscr.io/linuxserver/transmission:4.1.3-r0-ls362
+    image: lscr.io/linuxserver/transmission:4.1.3-r0-ls365
     volumes:
       - ${APP_DATA_DIR}/data/config:/config
       - ${ROOT_FOLDER_HOST}/media/torrents:/media/torrents
