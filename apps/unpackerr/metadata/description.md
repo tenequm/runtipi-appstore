@@ -1,47 +1,28 @@
 # Unpackerr
 
-Unpackerr monitors your Sonarr, Radarr, Lidarr, and Readarr download queues and automatically extracts RAR, ZIP, and other compressed archives when downloads complete. It seamlessly integrates with the *arr suite to ensure your media files are ready for import without manual intervention.
+Unpackerr watches the Sonarr and Radarr download queues and extracts RAR, ZIP, 7z and other
+archives when a download completes, then removes the extracted copy after import.
 
 ## Features
 
-- **Automatic Extraction**: Monitors download queues and extracts archives automatically
-- **Multi-App Support**: Works with Sonarr, Radarr, Lidarr, Readarr, and Whisparr
-- **Archive Format Support**: Handles RAR, ZIP, 7z, and other common archive formats
-- **Cleanup After Import**: Automatically removes extracted files after successful import
-- **Prometheus Metrics**: Built-in web server for monitoring and Grafana integration
-- **Folder Watching**: Can also monitor standalone folders for extraction
+- **Automatic extraction** of completed *arr downloads, with retries
+- **Web UI and HTTP API** on port 5656: live queue, history, logs and settings
+- **Cleanup after import**
+- **Folder watching** for archives outside the *arr apps (configured in the UI)
 
-## Runtipi Integration
+## Runtipi integration
 
-This app is pre-configured to work with other *arr apps in Runtipi:
+Sonarr and Radarr are set from this app's form (`http://sonarr:8989`, `http://radarr:7878`
+on Runtipi's shared network). Those values come from the environment, so the web UI shows
+them as locked. Add Lidarr, Readarr or watch folders in the web UI; they are saved to
+`/config/unpackerr.conf`.
 
-- **Sonarr**: Default URL `http://sonarr:8989`
-- **Radarr**: Default URL `http://radarr:7878`
-- **Lidarr**: Default URL `http://lidarr:8686`
-- **Readarr**: Default URL `http://readarr:8787`
+## First start
 
-All apps share the same Docker network, so they can communicate using their service names.
+With no UI password set, the first start prints a temporary `admin` password in the
+container log. Sign in and change it under Settings; `unpackerr --reset` issues a new one.
 
-## Setup
+## Links
 
-1. Install and configure your *arr apps (Sonarr, Radarr, etc.) first
-2. Get the API key from each app (Settings > General > Security)
-3. Enter the API keys in the Unpackerr configuration
-4. The default URLs are pre-configured for Runtipi's internal networking
-
-## How It Works
-
-1. Unpackerr polls the *arr apps' download queues every 2 minutes (configurable)
-2. When a download completes that contains compressed archives, Unpackerr extracts them
-3. The *arr app imports the extracted media files
-4. Unpackerr cleans up the extracted files after successful import
-
-## Metrics
-
-Access Prometheus metrics at port 5656 for monitoring extraction activity. A Grafana dashboard is available at [grafana.com/dashboards/18817](https://grafana.com/grafana/dashboards/18817-unpackerr/).
-
-## Storage
-
-- Configuration is stored in `/config`
-- Logs are stored in `/data/unpackerr.log`
-- The `/data` volume should match your media/downloads directory
+- [Website](https://unpackerr.zip)
+- [GitHub](https://github.com/Unpackerr/unpackerr)

@@ -3,19 +3,19 @@
   "name": "Unpackerr",
   "id": "unpackerr",
   "available": true,
-  "short_desc": "Extracts downloads for Radarr, Sonarr, Lidarr, Readarr and cleans up after import",
+  "short_desc": "Extracts downloads for Sonarr and Radarr, with a web UI, and cleans up after import",
   "author": "Unpackerr",
   "port": 5656,
   "categories": ["media", "automation"],
-  "description": "Unpackerr monitors your Sonarr, Radarr, Lidarr, and Readarr download queues and automatically extracts RAR and ZIP archives when downloads complete. It integrates seamlessly with the *arr apps to ensure your media files are ready for import.",
-  "tipi_version": 5,
-  "version": "0.15.2",
+  "description": "Unpackerr watches the Sonarr and Radarr download queues and extracts RAR, ZIP and other archives when downloads complete, with a web UI for the queue, history and settings.",
+  "tipi_version": 6,
+  "version": "1.0.1",
   "source": "https://github.com/Unpackerr/unpackerr",
   "website": "https://unpackerr.zip",
   "exposable": false,
   "supported_architectures": ["arm64", "amd64"],
   "created_at": 1735325400000,
-  "updated_at": 1735344000000,
+  "updated_at": 1794828471822,
   "dynamic_config": true,
   "form_fields": [
     {
@@ -27,7 +27,7 @@
       "env_variable": "SONARR_URL"
     },
     {
-      "type": "text",
+      "type": "password",
       "label": "Sonarr API Key",
       "hint": "Get from Sonarr: Settings > General > Security. Required if using Sonarr.",
       "required": false,
@@ -42,41 +42,11 @@
       "env_variable": "RADARR_URL"
     },
     {
-      "type": "text",
+      "type": "password",
       "label": "Radarr API Key",
       "hint": "Get from Radarr: Settings > General > Security. Required if using Radarr.",
       "required": false,
       "env_variable": "RADARR_API_KEY"
-    },
-    {
-      "type": "text",
-      "label": "Lidarr URL",
-      "hint": "Use http://lidarr:8686 for Runtipi's Lidarr. Leave empty if not using Lidarr.",
-      "placeholder": "http://lidarr:8686",
-      "required": false,
-      "env_variable": "LIDARR_URL"
-    },
-    {
-      "type": "text",
-      "label": "Lidarr API Key",
-      "hint": "Get from Lidarr: Settings > General > Security. Required if using Lidarr.",
-      "required": false,
-      "env_variable": "LIDARR_API_KEY"
-    },
-    {
-      "type": "text",
-      "label": "Readarr URL",
-      "hint": "Use http://readarr:8787 for Runtipi's Readarr. Leave empty if not using Readarr.",
-      "placeholder": "http://readarr:8787",
-      "required": false,
-      "env_variable": "READARR_URL"
-    },
-    {
-      "type": "text",
-      "label": "Readarr API Key",
-      "hint": "Get from Readarr: Settings > General > Security. Required if using Readarr.",
-      "required": false,
-      "env_variable": "READARR_API_KEY"
     }
   ]
 }
