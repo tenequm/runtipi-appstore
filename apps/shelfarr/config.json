@@ -11,8 +11,8 @@
     "books"
   ],
   "description": "Shelfarr is a self-hosted request and acquisition system for ebooks and audiobooks. Users search a title through Open Library, Hardcover or Google Books, request the format they want, and Shelfarr queries the configured indexer (Prowlarr, Jackett or NZBHydra2) plus any enabled direct sources, scores the releases against format, bitrate and language preferences, hands the winner to a download client, then renames and files the result into the library and asks Audiobookshelf to rescan. It fills the gap left by Readarr's retirement: unlike the *arr-family forks it also supports direct sources (Anna's Archive, Z-Library, LibriVox) that are not Torznab indexers, and unlike the Audible-only tools it uses open metadata providers, so non-English catalogues work.",
-  "tipi_version": 4,
-  "version": "2026.11.09.1",
+  "tipi_version": 5,
+  "version": "2026.11.16.1",
   "min_tipi_version": "4.5.0",
   "source": "https://github.com/Pedro-Revez-Silva/shelfarr",
   "website": "https://shelfarr.org",
@@ -23,6 +23,6 @@
     "amd64"
   ],
   "created_at": 1750000000000,
-  "updated_at": 1794826704833,
+  "updated_at": 1795440130118,
   "form_fields": []
 }

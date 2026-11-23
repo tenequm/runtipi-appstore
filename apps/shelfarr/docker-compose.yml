@@ -1,6 +1,6 @@
 services:
   shelfarr:
-    image: ghcr.io/pedro-revez-silva/shelfarr:2026.11.09.1
+    image: ghcr.io/pedro-revez-silva/shelfarr:2026.11.16.1
     environment:
       - SOLID_QUEUE_IN_PUMA=1
       - PUID=1000
